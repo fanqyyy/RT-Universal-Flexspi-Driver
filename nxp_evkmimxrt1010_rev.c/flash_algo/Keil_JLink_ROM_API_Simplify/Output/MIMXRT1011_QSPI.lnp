@@ -1,0 +1,13 @@
+--cpu Cortex-M7.fp.dp --scatter "./RTE/Device/MIMXRT1011DAE5A/MIMXRT1011xxxxx_ram.scf"
+".\output\flashprg_at25sf128a.o"
+".\output\flashdev_at25sf128a.o"
+".\output\bl_clock_config_mimxrt1011.o"
+".\output\bl_flexspi.o"
+".\output\flexspi_nor_flash_mimxrt1011.o"
+".\output\hardware_init_mimxrt1011.o"
+".\output\microseconds_pit.o"
+".\output\fsl_clock.o"
+--strict --scatter ".\Target.lin"
+--diag_suppress L6305 --summary_stderr --info summarysizes --map --load_addr_map_info --symbols
+--info sizes --info totals --info unused --info veneers
+--list ".\MIMXRT1011_QSPI.map" -o .\Output\MIMXRT1011_QSPI.axf
