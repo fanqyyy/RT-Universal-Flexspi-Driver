@@ -12,7 +12,6 @@
 
 #include "bl_flexspi.h"
 #include "flexspi_nor_flash.h"
-#include "bl_api.h"
 ////////////////////////////////////////////////////////////////////////////////
 // Definitions
 ////////////////////////////////////////////////////////////////////////////////
@@ -3095,6 +3094,21 @@ status_t flexspi_nor_flash_read(
     } while (0);
 
     return status;
+}
+
+//!@brief Write FlexSPI persistent content
+status_t flexspi_nor_write_persistent(const uint32_t data)
+{
+    SRC->GPR[2] = data;
+
+    return kStatus_Success;
+}
+//!@brief Read FlexSPI persistent content
+status_t flexspi_nor_read_persistent(uint32_t *data)
+{
+    *data = SRC->GPR[2];
+
+    return kStatus_Success;
 }
 
 status_t flexspi_nor_restore_spi_protocol(uint32_t instance, flexspi_nor_config_t *config, flash_run_context_t *run_ctx)

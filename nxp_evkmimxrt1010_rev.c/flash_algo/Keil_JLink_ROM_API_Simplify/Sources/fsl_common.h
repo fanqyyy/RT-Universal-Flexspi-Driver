@@ -19,15 +19,6 @@
 #include <stddef.h>
 #endif
 
-/*
- * For CMSIS pack RTE.
- * CMSIS pack RTE generates "RTC_Components.h" which contains the statements
- * of the related <RTE_Components_h> element for all selected software components.
- */
-#ifdef _RTE_
-//#include "RTE_Components.h"
-#endif
-
 #include "fsl_device_registers.h"
 
 /*!
@@ -446,7 +437,7 @@ void DefaultISR(void);
  * The fsl_clock.h is included here because it needs MAKE_VERSION/MAKE_STATUS/status_t
  * defined in previous of this file.
  */
-#include "fsl_clock.h"
+//#include "fsl_clock.h"
 
 /*
  * Chip level peripheral reset API, for MCUs that implement peripheral reset control external to a peripheral

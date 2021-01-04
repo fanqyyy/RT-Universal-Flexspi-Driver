@@ -10,7 +10,6 @@
 
 #include "FlashOS.H" // FlashOS Structures
 #include "flexspi_nor_flash.h"
-#include "bl_api.h"
 
 #define FLEXSPI_NOR_INSTANCE 0
 #define SECTOR_SIZE          (4096)

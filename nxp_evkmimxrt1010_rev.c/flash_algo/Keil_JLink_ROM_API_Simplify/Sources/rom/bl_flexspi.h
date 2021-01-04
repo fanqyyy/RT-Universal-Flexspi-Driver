@@ -320,8 +320,11 @@ extern "C"
     //!@brief Perform FlexSPI command
     status_t flexspi_command_xfer(uint32_t instance, flexspi_xfer_t *xfer);
 
+	  //!@brief Get Core Clock
+		uint32_t get_core_clock(void);																	
+																			
     //!@brief Get FlexSPI Clock frequency
-    extern status_t flexspi_get_clock(uint32_t instance, flexspi_clock_type_t type, uint32_t *freq);
+    status_t flexspi_get_clock(uint32_t instance, flexspi_clock_type_t type, uint32_t *freq);
 
     //!@brief Wait until FlexSPI controller becomes idle
     void flexspi_wait_idle(uint32_t instance);
@@ -333,16 +336,16 @@ extern "C"
     void flexspi_clear_sequence_pointer(uint32_t instance);
 
     //!@brief Enable clock gate of FlexSPI
-    extern void flexspi_clock_gate_enable(uint32_t instance);
+    void flexspi_clock_gate_enable(uint32_t instance);
 
     //!@brief Disable clock gate of FlexSPI
-    extern void flexspi_clock_gate_disable(uint32_t instance);
+    void flexspi_clock_gate_disable(uint32_t instance);
 
     //!@brief Configure IOMUX for FlexSPI
-    extern void flexspi_iomux_config(uint32_t instance, flexspi_mem_config_t *config);
+    void flexspi_iomux_config(uint32_t instance, flexspi_mem_config_t *config);
 
     //!@brief Configure Clock for FlexSPI
-    extern void flexspi_clock_config(uint32_t instance, uint32_t freq, uint32_t sampleClkMode);
+    void flexspi_clock_config(uint32_t instance, uint32_t freq, uint32_t sampleClkMode);
 
     //!@brief Check whether Pad Setting Override feature is enabled.
     bool flexspi_is_padsetting_override_enable(flexspi_mem_config_t *config);
@@ -369,14 +372,12 @@ extern "C"
     void flexspi_half_clock_control(uint32_t instance, uint32_t option);
 
     //!@brief Set Failfase setting info
-    extern status_t flexspi_set_failsafe_setting(flexspi_mem_config_t *config);
+    status_t flexspi_set_failsafe_setting(flexspi_mem_config_t *config);
 
     //!@brief Get Maximumn clock frequency
-    extern status_t flexspi_get_max_supported_freq(uint32_t instance, uint32_t *freq, uint32_t clkMode);
+    status_t flexspi_get_max_supported_freq(uint32_t instance, uint32_t *freq, uint32_t clkMode);
 
-    extern void flexspi_sw_delay_us(uint64_t us);
-
-    extern void flexspi_update_padsetting(flexspi_mem_config_t *config, uint32_t driveStrength);
+    void flexspi_sw_delay_us(uint64_t us);
 
 #ifdef __cplusplus
 }

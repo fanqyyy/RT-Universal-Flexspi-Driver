@@ -11,11 +11,11 @@
 #define __BL_API_H__
 
 #include "fsl_device_registers.h"
-#include "fsl_clock.h"
 #include "flexspi_nor_flash.h"
-#include "fsl_rtwdog.h"
-#include "fsl_wdog.h"
-#include <string.h>
+/*******************************************************************************
+ * Definitions
+ ******************************************************************************/
+#define RT1010_ROM_API_TREE_ADDR (0x0020001c)
 
 typedef struct
 {
@@ -24,7 +24,7 @@ typedef struct
     void (*clear_cache)(uint32_t instance);
     status_t (*xfer)(uint32_t instance, flexspi_xfer_t *xfer);
     status_t (*update_lut)(uint32_t instance, uint32_t seqIndex, const uint32_t *lutBase, uint32_t seqNumber);
-} flexspi_nor_driver_interface_t;
+} flexspi_nor_flash_driver_imxrt1010_t;
 
 
 typedef struct
@@ -33,35 +33,10 @@ typedef struct
     const char *copyright;                                  //!< Bootloader Copyright
     void (*runBootloader)(void *arg);                       //!< Function to start the bootloader executing
     const uint32_t *reserved0;                              //!< Reserved
-    const flexspi_nor_driver_interface_t *flexSpiNorDriver; //!< FlexSPI NOR Flash API
-} bootloader_api_entry_t;
+    const flexspi_nor_flash_driver_imxrt1010_t *flexSpiNorDriver; //!< FlexSPI NOR Flash API
+} bootloader_tree_imxrt1010_t;
 
-enum
-{
-    kEnterBootloader_Tag                   = 0xEB,
-    kEnterBootloader_Mode_Default          = 0,
-    kEnterBootloader_Mode_SerialDownloader = 1,
 
-    kEnterBootloader_SerialInterface_Auto = 0,
-    kEnterBootloader_SerialInterface_USB  = 1,
-    kEnterBootloader_SerialInterface_UART = 2,
-
-    kEnterBootloader_ImageIndex_Max = 3,
-};
-
-typedef union
-{
-    struct
-    {
-        uint32_t imageIndex : 4;
-        uint32_t reserved : 12;
-        uint32_t serialBootInterface : 4;
-        uint32_t bootMode : 4;
-        uint32_t tag : 8;
-    } B;
-    uint32_t U;
-} run_bootloader_ctx_t;
-
-#define g_bootloaderTree (*(bootloader_api_entry_t **)0x0020001c)
+#define g_bootloaderTree_imxrt1010 (*(bootloader_tree_imxrt1010_t **)RT1010_ROM_API_TREE_ADDR)
 
 #endif //__BL_API_H__
