@@ -424,11 +424,6 @@
               <FilePath>.\Sources\ROM\hardware_init_MIMXRT1011.c</FilePath>
             </File>
             <File>
-              <FileName>microseconds_pit.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Sources\rom\microseconds_pit.c</FilePath>
-            </File>
-            <File>
               <FileName>fsl_clock.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Sources\fsl_clock.c</FilePath>

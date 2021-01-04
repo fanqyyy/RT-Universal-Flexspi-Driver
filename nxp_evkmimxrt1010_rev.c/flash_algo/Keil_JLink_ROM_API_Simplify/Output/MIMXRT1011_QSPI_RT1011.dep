@@ -1,166 +1,0 @@
-Dependencies for Project 'MIMXRT1011_QSPI', Target 'RT1011': (DO NOT MODIFY !)
-CompilerVersion: 5060750::V5.06 update 6 (build 750)::ARMCC
-F (.\FlashPrg_at25sf128a.c)(0x5FB537DF)(--c99 -c --cpu Cortex-M7.fp.dp -g -O0 --apcs=interwork --apcs /ropi/rwpi -I .\Sources -I .\Sources\rom -I ..\..\..\..\CMSIS\Include-I.\RTE\_RT1011-IC:\Users\nxf55062\AppData\Local\Arm\Packs\ARM\CMSIS\5.7.0\CMSIS\Core\Include-IC:\Users\nxf55062\AppData\Local\Arm\Packs\NXP\MIMXRT1011_DFP\1.0.0-D__UVISION_VERSION="530" -D_RTE_ -DCPU_MIMXRT1011DAE5A -D_RTE_ -DCPU_MIMXRT1011DAE5A-o .\output\flashprg_at25sf128a.o --omf_browse .\output\flashprg_at25sf128a.crf --depend .\output\flashprg_at25sf128a.d)
-I (FlashOS.H)(0x5FB537DF)
-I (.\Sources\rom\flexspi_nor_flash.h)(0x5FB537DF)
-I (.\Sources\fsl_common.h)(0x5FF273C0)
-I (C:\Keil_v5\ARM\ARMCC\include\assert.h)(0x5E53505A)
-I (C:\Keil_v5\ARM\ARMCC\include\stdbool.h)(0x5E53505C)
-I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x5E53505C)
-I (C:\Keil_v5\ARM\ARMCC\include\string.h)(0x5E53505C)
-I (C:\Keil_v5\ARM\ARMCC\include\stdlib.h)(0x5E53505C)
-I (.\Sources\fsl_device_registers.h)(0x5FB537DF)
-I (.\Sources\MIMXRT1011.h)(0x5FB537DF)
-I (..\..\..\..\CMSIS\Include\core_cm7.h)(0x5FB32ACB)
-I (..\..\..\..\CMSIS\Include\cmsis_version.h)(0x5F61A56C)
-I (..\..\..\..\CMSIS\Include\cmsis_compiler.h)(0x5F61A56C)
-I (..\..\..\..\CMSIS\Include\cmsis_armcc.h)(0x5F61A56C)
-I (..\..\..\..\CMSIS\Include\mpu_armv7.h)(0x5F61A56C)
-I (.\Sources\system_MIMXRT1011.h)(0x5FB537DF)
-I (.\Sources\MIMXRT1011_features.h)(0x5FB537DF)
-I (.\Sources\fsl_clock.h)(0x5FB537DF)
-I (.\Sources\rom\bootloader_common.h)(0x5FF280E9)
-I (C:\Keil_v5\ARM\ARMCC\include\stdarg.h)(0x5E53505C)
-I (C:\Keil_v5\ARM\ARMCC\include\stdio.h)(0x5E53505C)
-I (.\Sources\rom\bootloader_config.h)(0x5FB537DF)
-I (.\Sources\rom\bl_flexspi.h)(0x5FB537DF)
-I (.\Sources\rom\bl_api.h)(0x5FF27630)
-I (.\Sources\fsl_rtwdog.h)(0x5FB537DF)
-I (.\Sources\fsl_wdog.h)(0x5FB537DF)
-F (.\FlashDev_at25sf128a.c)(0x5FB537DF)(--c99 -c --cpu Cortex-M7.fp.dp -g -O0 --apcs=interwork --apcs /ropi/rwpi -I .\Sources -I .\Sources\rom -I ..\..\..\..\CMSIS\Include-I.\RTE\_RT1011-IC:\Users\nxf55062\AppData\Local\Arm\Packs\ARM\CMSIS\5.7.0\CMSIS\Core\Include-IC:\Users\nxf55062\AppData\Local\Arm\Packs\NXP\MIMXRT1011_DFP\1.0.0-D__UVISION_VERSION="530" -D_RTE_ -DCPU_MIMXRT1011DAE5A -D_RTE_ -DCPU_MIMXRT1011DAE5A-o .\output\flashdev_at25sf128a.o --omf_browse .\output\flashdev_at25sf128a.crf --depend .\output\flashdev_at25sf128a.d)
-I (FlashOS.H)(0x5FB537DF)
-F (.\Sources\ROM\bl_clock_config_MIMXRT1011.c)(0x5FF280B4)(--c99 -c --cpu Cortex-M7.fp.dp -g -O0 --apcs=interwork --apcs /ropi/rwpi -I .\Sources -I .\Sources\rom -I ..\..\..\..\CMSIS\Include-I.\RTE\_RT1011-IC:\Users\nxf55062\AppData\Local\Arm\Packs\ARM\CMSIS\5.7.0\CMSIS\Core\Include-IC:\Users\nxf55062\AppData\Local\Arm\Packs\NXP\MIMXRT1011_DFP\1.0.0-D__UVISION_VERSION="530" -D_RTE_ -DCPU_MIMXRT1011DAE5A -D_RTE_ -DCPU_MIMXRT1011DAE5A-o .\output\bl_clock_config_mimxrt1011.o --omf_browse .\output\bl_clock_config_mimxrt1011.crf --depend .\output\bl_clock_config_mimxrt1011.d)
-I (Sources\ROM\bl_flexspi.h)(0x5FB537DF)
-I (.\Sources\fsl_common.h)(0x5FF273C0)
-I (C:\Keil_v5\ARM\ARMCC\include\assert.h)(0x5E53505A)
-I (C:\Keil_v5\ARM\ARMCC\include\stdbool.h)(0x5E53505C)
-I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x5E53505C)
-I (C:\Keil_v5\ARM\ARMCC\include\string.h)(0x5E53505C)
-I (C:\Keil_v5\ARM\ARMCC\include\stdlib.h)(0x5E53505C)
-I (.\Sources\fsl_device_registers.h)(0x5FB537DF)
-I (.\Sources\MIMXRT1011.h)(0x5FB537DF)
-I (..\..\..\..\CMSIS\Include\core_cm7.h)(0x5FB32ACB)
-I (..\..\..\..\CMSIS\Include\cmsis_version.h)(0x5F61A56C)
-I (..\..\..\..\CMSIS\Include\cmsis_compiler.h)(0x5F61A56C)
-I (..\..\..\..\CMSIS\Include\cmsis_armcc.h)(0x5F61A56C)
-I (..\..\..\..\CMSIS\Include\mpu_armv7.h)(0x5F61A56C)
-I (.\Sources\system_MIMXRT1011.h)(0x5FB537DF)
-I (.\Sources\MIMXRT1011_features.h)(0x5FB537DF)
-I (.\Sources\fsl_clock.h)(0x5FB537DF)
-I (Sources\ROM\bootloader_common.h)(0x5FF280E9)
-I (C:\Keil_v5\ARM\ARMCC\include\stdarg.h)(0x5E53505C)
-I (C:\Keil_v5\ARM\ARMCC\include\stdio.h)(0x5E53505C)
-I (Sources\ROM\bootloader_config.h)(0x5FB537DF)
-I (.\Sources\fsl_assert.h)(0x5FB537DF)
-I (Sources\ROM\fusemap.h)(0x5FB537DF)
-I (Sources\ROM\microseconds.h)(0x5FB537DF)
-F (.\Sources\ROM\bl_flexspi.c)(0x5FB537DF)(--c99 -c --cpu Cortex-M7.fp.dp -g -O0 --apcs=interwork --apcs /ropi/rwpi -I .\Sources -I .\Sources\rom -I ..\..\..\..\CMSIS\Include-I.\RTE\_RT1011-IC:\Users\nxf55062\AppData\Local\Arm\Packs\ARM\CMSIS\5.7.0\CMSIS\Core\Include-IC:\Users\nxf55062\AppData\Local\Arm\Packs\NXP\MIMXRT1011_DFP\1.0.0-D__UVISION_VERSION="530" -D_RTE_ -DCPU_MIMXRT1011DAE5A -D_RTE_ -DCPU_MIMXRT1011DAE5A-o .\output\bl_flexspi.o --omf_browse .\output\bl_flexspi.crf --depend .\output\bl_flexspi.d)
-I (C:\Keil_v5\ARM\ARMCC\include\assert.h)(0x5E53505A)
-I (C:\Keil_v5\ARM\ARMCC\include\stdbool.h)(0x5E53505C)
-I (Sources\ROM\bl_flexspi.h)(0x5FB537DF)
-I (.\Sources\fsl_common.h)(0x5FF273C0)
-I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x5E53505C)
-I (C:\Keil_v5\ARM\ARMCC\include\string.h)(0x5E53505C)
-I (C:\Keil_v5\ARM\ARMCC\include\stdlib.h)(0x5E53505C)
-I (.\Sources\fsl_device_registers.h)(0x5FB537DF)
-I (.\Sources\MIMXRT1011.h)(0x5FB537DF)
-I (..\..\..\..\CMSIS\Include\core_cm7.h)(0x5FB32ACB)
-I (..\..\..\..\CMSIS\Include\cmsis_version.h)(0x5F61A56C)
-I (..\..\..\..\CMSIS\Include\cmsis_compiler.h)(0x5F61A56C)
-I (..\..\..\..\CMSIS\Include\cmsis_armcc.h)(0x5F61A56C)
-I (..\..\..\..\CMSIS\Include\mpu_armv7.h)(0x5F61A56C)
-I (.\Sources\system_MIMXRT1011.h)(0x5FB537DF)
-I (.\Sources\MIMXRT1011_features.h)(0x5FB537DF)
-I (.\Sources\fsl_clock.h)(0x5FB537DF)
-I (Sources\ROM\microseconds.h)(0x5FB537DF)
-I (C:\Keil_v5\ARM\ARMCC\include\stdio.h)(0x5E53505C)
-F (.\Sources\ROM\flexspi_nor_flash_MIMXRT1011.c)(0x5FB537DF)(--c99 -c --cpu Cortex-M7.fp.dp -g -O0 --apcs=interwork --apcs /ropi/rwpi -I .\Sources -I .\Sources\rom -I ..\..\..\..\CMSIS\Include-I.\RTE\_RT1011-IC:\Users\nxf55062\AppData\Local\Arm\Packs\ARM\CMSIS\5.7.0\CMSIS\Core\Include-IC:\Users\nxf55062\AppData\Local\Arm\Packs\NXP\MIMXRT1011_DFP\1.0.0-D__UVISION_VERSION="530" -D_RTE_ -DCPU_MIMXRT1011DAE5A -D_RTE_ -DCPU_MIMXRT1011DAE5A-o .\output\flexspi_nor_flash_mimxrt1011.o --omf_browse .\output\flexspi_nor_flash_mimxrt1011.crf --depend .\output\flexspi_nor_flash_mimxrt1011.d)
-I (C:\Keil_v5\ARM\ARMCC\include\stdbool.h)(0x5E53505C)
-I (C:\Keil_v5\ARM\ARMCC\include\stdlib.h)(0x5E53505C)
-I (C:\Keil_v5\ARM\ARMCC\include\string.h)(0x5E53505C)
-I (Sources\ROM\bl_flexspi.h)(0x5FB537DF)
-I (.\Sources\fsl_common.h)(0x5FF273C0)
-I (C:\Keil_v5\ARM\ARMCC\include\assert.h)(0x5E53505A)
-I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x5E53505C)
-I (.\Sources\fsl_device_registers.h)(0x5FB537DF)
-I (.\Sources\MIMXRT1011.h)(0x5FB537DF)
-I (..\..\..\..\CMSIS\Include\core_cm7.h)(0x5FB32ACB)
-I (..\..\..\..\CMSIS\Include\cmsis_version.h)(0x5F61A56C)
-I (..\..\..\..\CMSIS\Include\cmsis_compiler.h)(0x5F61A56C)
-I (..\..\..\..\CMSIS\Include\cmsis_armcc.h)(0x5F61A56C)
-I (..\..\..\..\CMSIS\Include\mpu_armv7.h)(0x5F61A56C)
-I (.\Sources\system_MIMXRT1011.h)(0x5FB537DF)
-I (.\Sources\MIMXRT1011_features.h)(0x5FB537DF)
-I (.\Sources\fsl_clock.h)(0x5FB537DF)
-I (Sources\ROM\flexspi_nor_flash.h)(0x5FB537DF)
-I (Sources\ROM\bootloader_common.h)(0x5FF280E9)
-I (C:\Keil_v5\ARM\ARMCC\include\stdarg.h)(0x5E53505C)
-I (C:\Keil_v5\ARM\ARMCC\include\stdio.h)(0x5E53505C)
-I (Sources\ROM\bootloader_config.h)(0x5FB537DF)
-I (Sources\ROM\bl_api.h)(0x5FF27630)
-I (.\Sources\fsl_rtwdog.h)(0x5FB537DF)
-I (.\Sources\fsl_wdog.h)(0x5FB537DF)
-F (.\Sources\ROM\hardware_init_MIMXRT1011.c)(0x5FF27FAD)(--c99 -c --cpu Cortex-M7.fp.dp -g -O0 --apcs=interwork --apcs /ropi/rwpi -I .\Sources -I .\Sources\rom -I ..\..\..\..\CMSIS\Include-I.\RTE\_RT1011-IC:\Users\nxf55062\AppData\Local\Arm\Packs\ARM\CMSIS\5.7.0\CMSIS\Core\Include-IC:\Users\nxf55062\AppData\Local\Arm\Packs\NXP\MIMXRT1011_DFP\1.0.0-D__UVISION_VERSION="530" -D_RTE_ -DCPU_MIMXRT1011DAE5A -D_RTE_ -DCPU_MIMXRT1011DAE5A-o .\output\hardware_init_mimxrt1011.o --omf_browse .\output\hardware_init_mimxrt1011.crf --depend .\output\hardware_init_mimxrt1011.d)
-I (Sources\ROM\bootloader_common.h)(0x5FF280E9)
-I (C:\Keil_v5\ARM\ARMCC\include\stdarg.h)(0x5E53505C)
-I (C:\Keil_v5\ARM\ARMCC\include\stdbool.h)(0x5E53505C)
-I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x5E53505C)
-I (C:\Keil_v5\ARM\ARMCC\include\stdio.h)(0x5E53505C)
-I (Sources\ROM\bootloader_config.h)(0x5FB537DF)
-I (.\Sources\fsl_common.h)(0x5FF273C0)
-I (C:\Keil_v5\ARM\ARMCC\include\assert.h)(0x5E53505A)
-I (C:\Keil_v5\ARM\ARMCC\include\string.h)(0x5E53505C)
-I (C:\Keil_v5\ARM\ARMCC\include\stdlib.h)(0x5E53505C)
-I (.\Sources\fsl_device_registers.h)(0x5FB537DF)
-I (.\Sources\MIMXRT1011.h)(0x5FB537DF)
-I (..\..\..\..\CMSIS\Include\core_cm7.h)(0x5FB32ACB)
-I (..\..\..\..\CMSIS\Include\cmsis_version.h)(0x5F61A56C)
-I (..\..\..\..\CMSIS\Include\cmsis_compiler.h)(0x5F61A56C)
-I (..\..\..\..\CMSIS\Include\cmsis_armcc.h)(0x5F61A56C)
-I (..\..\..\..\CMSIS\Include\mpu_armv7.h)(0x5F61A56C)
-I (.\Sources\system_MIMXRT1011.h)(0x5FB537DF)
-I (.\Sources\MIMXRT1011_features.h)(0x5FB537DF)
-I (.\Sources\fsl_clock.h)(0x5FB537DF)
-I (.\Sources\fsl_assert.h)(0x5FB537DF)
-I (Sources\ROM\bl_flexspi.h)(0x5FB537DF)
-I (Sources\ROM\flexspi_nor_flash.h)(0x5FB537DF)
-I (Sources\ROM\fusemap.h)(0x5FB537DF)
-F (.\Sources\rom\microseconds_pit.c)(0x5FB537DF)(--c99 -c --cpu Cortex-M7.fp.dp -g -O0 --apcs=interwork --apcs /ropi/rwpi -I .\Sources -I .\Sources\rom -I ..\..\..\..\CMSIS\Include-I.\RTE\_RT1011-IC:\Users\nxf55062\AppData\Local\Arm\Packs\ARM\CMSIS\5.7.0\CMSIS\Core\Include-IC:\Users\nxf55062\AppData\Local\Arm\Packs\NXP\MIMXRT1011_DFP\1.0.0-D__UVISION_VERSION="530" -D_RTE_ -DCPU_MIMXRT1011DAE5A -D_RTE_ -DCPU_MIMXRT1011DAE5A-o .\output\microseconds_pit.o --omf_browse .\output\microseconds_pit.crf --depend .\output\microseconds_pit.d)
-I (Sources\rom\microseconds.h)(0x5FB537DF)
-I (C:\Keil_v5\ARM\ARMCC\include\stdio.h)(0x5E53505C)
-I (C:\Keil_v5\ARM\ARMCC\include\stdbool.h)(0x5E53505C)
-I (.\Sources\fsl_device_registers.h)(0x5FB537DF)
-I (.\Sources\MIMXRT1011.h)(0x5FB537DF)
-I (..\..\..\..\CMSIS\Include\core_cm7.h)(0x5FB32ACB)
-I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x5E53505C)
-I (..\..\..\..\CMSIS\Include\cmsis_version.h)(0x5F61A56C)
-I (..\..\..\..\CMSIS\Include\cmsis_compiler.h)(0x5F61A56C)
-I (..\..\..\..\CMSIS\Include\cmsis_armcc.h)(0x5F61A56C)
-I (..\..\..\..\CMSIS\Include\mpu_armv7.h)(0x5F61A56C)
-I (.\Sources\system_MIMXRT1011.h)(0x5FB537DF)
-I (.\Sources\MIMXRT1011_features.h)(0x5FB537DF)
-I (C:\Keil_v5\ARM\ARMCC\include\stdarg.h)(0x5E53505C)
-I (Sources\rom\bootloader_common.h)(0x5FF280E9)
-I (Sources\rom\bootloader_config.h)(0x5FB537DF)
-I (.\Sources\fsl_common.h)(0x5FF273C0)
-I (C:\Keil_v5\ARM\ARMCC\include\assert.h)(0x5E53505A)
-I (C:\Keil_v5\ARM\ARMCC\include\string.h)(0x5E53505C)
-I (C:\Keil_v5\ARM\ARMCC\include\stdlib.h)(0x5E53505C)
-I (.\Sources\fsl_clock.h)(0x5FB537DF)
-F (.\Sources\fsl_clock.c)(0x5FB537DF)(--c99 -c --cpu Cortex-M7.fp.dp -g -O0 --apcs=interwork --apcs /ropi/rwpi -I .\Sources -I .\Sources\rom -I ..\..\..\..\CMSIS\Include-I.\RTE\_RT1011-IC:\Users\nxf55062\AppData\Local\Arm\Packs\ARM\CMSIS\5.7.0\CMSIS\Core\Include-IC:\Users\nxf55062\AppData\Local\Arm\Packs\NXP\MIMXRT1011_DFP\1.0.0-D__UVISION_VERSION="530" -D_RTE_ -DCPU_MIMXRT1011DAE5A -D_RTE_ -DCPU_MIMXRT1011DAE5A-o .\output\fsl_clock.o --omf_browse .\output\fsl_clock.crf --depend .\output\fsl_clock.d)
-I (Sources\fsl_clock.h)(0x5FB537DF)
-I (Sources\fsl_common.h)(0x5FF273C0)
-I (C:\Keil_v5\ARM\ARMCC\include\assert.h)(0x5E53505A)
-I (C:\Keil_v5\ARM\ARMCC\include\stdbool.h)(0x5E53505C)
-I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x5E53505C)
-I (C:\Keil_v5\ARM\ARMCC\include\string.h)(0x5E53505C)
-I (C:\Keil_v5\ARM\ARMCC\include\stdlib.h)(0x5E53505C)
-I (Sources\fsl_device_registers.h)(0x5FB537DF)
-I (Sources\MIMXRT1011.h)(0x5FB537DF)
-I (..\..\..\..\CMSIS\Include\core_cm7.h)(0x5FB32ACB)
-I (..\..\..\..\CMSIS\Include\cmsis_version.h)(0x5F61A56C)
-I (..\..\..\..\CMSIS\Include\cmsis_compiler.h)(0x5F61A56C)
-I (..\..\..\..\CMSIS\Include\cmsis_armcc.h)(0x5F61A56C)
-I (..\..\..\..\CMSIS\Include\mpu_armv7.h)(0x5F61A56C)
-I (Sources\system_MIMXRT1011.h)(0x5FB537DF)
-I (Sources\MIMXRT1011_features.h)(0x5FB537DF)

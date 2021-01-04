@@ -11,42 +11,6 @@
 #include "fsl_assert.h"
 #include "fsl_device_registers.h"
 #include "fsl_clock.h"
-#include "fusemap.h"
-#include "microseconds.h"
-
-////////////////////////////////////////////////////////////////////////////////
-// Definitions
-////////////////////////////////////////////////////////////////////////////////
-#ifndef FREQ_396MHz
-#define FREQ_396MHz (396UL * 1000 * 1000)
-#endif
-#ifndef FREQ_528MHz
-#define FREQ_528MHz (528UL * 1000 * 1000)
-#endif
-#ifndef FREQ_24MHz
-#define FREQ_24MHz (24UL * 1000 * 1000)
-#endif
-#ifndef FREQ_480MHz
-#define FREQ_480MHz (480UL * 1000 * 1000)
-#endif
-#ifndef FREQ_432MHz
-#define FREQ_432MHz (432UL * 1000 * 1000)
-#endif
-#ifndef FREQ_508MHz
-#define FREQ_508MHz (508UL * 1000 * 1000)
-#endif
-#ifndef FREQ_1MHz
-#define FREQ_1MHz (1UL * 1000 * 1000)
-#endif
-#ifndef FREQ_500MHz
-#define FREQ_500MHz (500UL * 1000 * 1000)
-#endif
-
-enum
-{
-    kMaxIpgClock = 144000000UL,
-};
-
 ////////////////////////////////////////////////////////////////////////////////
 // Code
 ////////////////////////////////////////////////////////////////////////////////
@@ -165,15 +129,6 @@ status_t flexspi_get_max_supported_freq(uint32_t instance, uint32_t *freq, uint3
     return status;
 }
 
-//! @brief Gets the clock value used for microseconds driver
-uint32_t microseconds_get_clock(void)
-{
-    // Get PIT clock source
-    uint32_t ahbBusDivider = ((CCM->CBCDR & CCM_CBCDR_IPG_PODF_MASK) >> CCM_CBCDR_IPG_PODF_SHIFT) + 1;
-    uint32_t periphDivider = ((CCM->CSCMR1 & CCM_CSCMR1_PERCLK_PODF_MASK) >> CCM_CSCMR1_PERCLK_PODF_SHIFT) + 1;
-    return SystemCoreClock / ahbBusDivider / periphDivider;
-}
-
 //! @brief Get BUS clock value
 uint32_t get_bus_clock(void)
 {
@@ -202,7 +157,7 @@ static uint32_t get_periph_clk(void)
     else // Derive clock from pre_periph_clk_sel
     {
         clock_source = (CCM->CBCMR & CCM_CBCMR_PRE_PERIPH_CLK_SEL_MASK) >> CCM_CBCMR_PRE_PERIPH_CLK_SEL_SHIFT;
-
+        
         switch(clock_source)
         {
         case 0: // SYS_PLL

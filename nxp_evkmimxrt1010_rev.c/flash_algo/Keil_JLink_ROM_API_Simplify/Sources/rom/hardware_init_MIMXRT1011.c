@@ -11,7 +11,6 @@
 #include "fsl_device_registers.h"
 #include "bl_flexspi.h"
 #include "flexspi_nor_flash.h"
-#include "fusemap.h"
 ////////////////////////////////////////////////////////////////////////////////
 /*******************************************************************************
  * Definitions

@@ -10,9 +10,7 @@
 #include <stdbool.h>
 
 #include "bl_flexspi.h"
-//#include "bootloader.h"
 #include "fsl_device_registers.h"
-#include "microseconds.h"
 
 /*******************************************************************************
  * Definitions
