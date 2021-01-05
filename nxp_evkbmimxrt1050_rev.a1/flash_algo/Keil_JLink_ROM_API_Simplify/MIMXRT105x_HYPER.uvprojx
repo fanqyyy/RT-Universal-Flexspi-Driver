@@ -404,16 +404,6 @@
           <GroupName>Sources</GroupName>
           <Files>
             <File>
-              <FileName>fsl_clock.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Sources\fsl_clock.c</FilePath>
-            </File>
-            <File>
-              <FileName>bl_clock_config_MIMXRT1052.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Sources\rom\bl_clock_config_MIMXRT1052.c</FilePath>
-            </File>
-            <File>
               <FileName>bl_flexspi.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Sources\rom\bl_flexspi.c</FilePath>
@@ -422,16 +412,6 @@
               <FileName>flexspi_nor_flash.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Sources\rom\flexspi_nor_flash.c</FilePath>
-            </File>
-            <File>
-              <FileName>hardware_init_MIMXRT1052.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Sources\rom\hardware_init_MIMXRT1052.c</FilePath>
-            </File>
-            <File>
-              <FileName>microseconds_sysclk.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Sources\rom\microseconds_sysclk.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -834,16 +814,6 @@
           <GroupName>Sources</GroupName>
           <Files>
             <File>
-              <FileName>fsl_clock.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Sources\fsl_clock.c</FilePath>
-            </File>
-            <File>
-              <FileName>bl_clock_config_MIMXRT1052.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Sources\rom\bl_clock_config_MIMXRT1052.c</FilePath>
-            </File>
-            <File>
               <FileName>bl_flexspi.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Sources\rom\bl_flexspi.c</FilePath>
@@ -852,16 +822,6 @@
               <FileName>flexspi_nor_flash.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Sources\rom\flexspi_nor_flash.c</FilePath>
-            </File>
-            <File>
-              <FileName>hardware_init_MIMXRT1052.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Sources\rom\hardware_init_MIMXRT1052.c</FilePath>
-            </File>
-            <File>
-              <FileName>microseconds_sysclk.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Sources\rom\microseconds_sysclk.c</FilePath>
             </File>
           </Files>
         </Group>

@@ -23,7 +23,7 @@
 /* CMSIS-style register definitions */
 #include "MIMXRT1052.h"
 /* CPU specific feature definitions */
-#include "MIMXRT1052_features.h"
+//#include "MIMXRT1052_features.h"
 
 #else
     #error "No valid CPU defined!"
