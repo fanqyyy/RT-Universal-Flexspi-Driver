@@ -47,8 +47,6 @@ int Init(unsigned long adr, unsigned long clk, unsigned long fnc)
     RTWDOG->CNT   = 0xD928C520U; /* 0xD928C520U is the update key */
     RTWDOG->TOVAL = 0xFFFF;
     RTWDOG->CS    = (uint32_t)((RTWDOG->CS) & ~RTWDOG_CS_EN_MASK) | RTWDOG_CS_UPDATE_MASK;
-
-    bl_api_init();
 		
     status = flexspi_nor_get_config(FLEXSPI_NOR_INSTANCE, &config, &option);
     if (status != kStatus_Success)

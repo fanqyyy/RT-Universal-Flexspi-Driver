@@ -409,11 +409,6 @@
               <FilePath>.\Sources\fsl_clock.c</FilePath>
             </File>
             <File>
-              <FileName>bl_api.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Sources\rom\bl_api.c</FilePath>
-            </File>
-            <File>
               <FileName>bl_clock_config_MIMXRT1052.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Sources\rom\bl_clock_config_MIMXRT1052.c</FilePath>
@@ -842,11 +837,6 @@
               <FileName>fsl_clock.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Sources\fsl_clock.c</FilePath>
-            </File>
-            <File>
-              <FileName>bl_api.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Sources\rom\bl_api.c</FilePath>
             </File>
             <File>
               <FileName>bl_clock_config_MIMXRT1052.c</FileName>

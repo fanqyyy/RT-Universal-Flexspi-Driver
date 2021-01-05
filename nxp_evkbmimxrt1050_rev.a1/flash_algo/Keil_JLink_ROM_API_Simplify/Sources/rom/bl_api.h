@@ -11,11 +11,7 @@
 #define __BL_API_H__
 
 #include "fsl_device_registers.h"
-#include "fsl_clock.h"
 #include "flexspi_nor_flash.h"
-#include "fsl_rtwdog.h"
-#include "fsl_wdog.h"
-#include <string.h>
 
 typedef struct
 {
@@ -43,34 +39,7 @@ typedef struct
     const uint32_t *reserved3; 
 } bootloader_api_entry_t;
 
-enum
-{
-    kEnterBootloader_Tag                   = 0xEB,
-    kEnterBootloader_Mode_Default          = 0,
-    kEnterBootloader_Mode_SerialDownloader = 1,
-
-    kEnterBootloader_SerialInterface_Auto = 0,
-    kEnterBootloader_SerialInterface_USB  = 1,
-    kEnterBootloader_SerialInterface_UART = 2,
-
-    kEnterBootloader_ImageIndex_Max = 3,
-};
-
-typedef union
-{
-    struct
-    {
-        uint32_t imageIndex : 4;
-        uint32_t reserved : 12;
-        uint32_t serialBootInterface : 4;
-        uint32_t bootMode : 4;
-        uint32_t tag : 8;
-    } B;
-    uint32_t U;
-} run_bootloader_ctx_t;
 
 #define g_bootloaderTree (*(bootloader_api_entry_t **)0x0020001c)
-
-void bl_api_init(void);
 
 #endif //__BL_API_H__
