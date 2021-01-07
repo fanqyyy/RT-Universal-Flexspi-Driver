@@ -54,7 +54,7 @@
           <CreateLib>0</CreateLib>
           <CreateHexFile>0</CreateHexFile>
           <DebugInformation>1</DebugInformation>
-          <BrowseInformation>0</BrowseInformation>
+          <BrowseInformation>1</BrowseInformation>
           <ListingPath>.\</ListingPath>
           <HexFormatSelection>1</HexFormatSelection>
           <Merge32K>0</Merge32K>
@@ -339,7 +339,7 @@
               <MiscControls></MiscControls>
               <Define>CPU_MIMXRT1021DAG5A</Define>
               <Undefine></Undefine>
-              <IncludePath>.\Sources;.\Sources\rom;..\..\..\..\CMSIS\Include</IncludePath>
+              <IncludePath>.\Sources;.\Sources\rom;..\..\..\Include</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -432,11 +432,6 @@
               <FileName>hardware_init_MIMXRT1021.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Sources\rom\hardware_init_MIMXRT1021.c</FilePath>
-            </File>
-            <File>
-              <FileName>microseconds_pit.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Sources\rom\microseconds_pit.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -867,11 +862,6 @@
               <FileName>hardware_init_MIMXRT1021.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Sources\rom\hardware_init_MIMXRT1021.c</FilePath>
-            </File>
-            <File>
-              <FileName>microseconds_pit.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Sources\rom\microseconds_pit.c</FilePath>
             </File>
           </Files>
         </Group>

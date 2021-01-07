@@ -36,18 +36,6 @@
 /*******************************************************************************
  * Definitions
  ******************************************************************************/
-#ifndef FREQ_396MHz
-#define FREQ_396MHz (396000000U)
-#endif
-#ifndef FREQ_480MHz
-#define FREQ_480MHz (480000000U)
-#endif
-#ifndef FREQ_528MHz
-#define FREQ_528MHz (528000000U)
-#endif
-#ifndef FREQ_24MHz
-#define FREQ_24MHz (24000000U)
-#endif
 
 /*====================== FLEXSPI IOMUXC Definitions ===========================*/
 #define SW_MUX_CTL_PAD_FLEXSPIB_DQS_IDX            79
@@ -979,50 +967,6 @@ uint32_t get_primary_boot_device(void)
 
     return flash_device;
 }
-
-#if BL_FEATURE_FLEXSPI_NOR_MODULE || BL_FEATURE_SPINAND_MODULE
-// Set failsafe settings
-status_t flexspi_set_failsafe_setting(flexspi_mem_config_t *config)
-{
-    status_t status = kStatus_InvalidArgument;
-    do
-    {
-        if (config == NULL)
-        {
-            break;
-        }
-// This is an example that shows how to override the default pad setting in ROM, for now, the pad setting in ROM is
-// idential to below values
-// So, below codes are not required.
-#if 0
-        // See IOMUXC pad setting definitions for more details.
-        config->controllerMiscOption |= (1<<kFlexSpiMiscOffset_PadSettingOverrideEnable);
-        config->dqsPadSettingOverride = 0x130f1;
-        config->sclkPadSettingOverride = 0x10f1;
-        config->csPadSettingOverride = 0x10f1;
-        config->dataPadSettingOverride = 0x10f1;
-#endif
-        if (config->readSampleClkSrc == kFlexSPIReadSampleClk_ExternalInputFromDqsPad)
-        {
-            if (config->controllerMiscOption & (1 << kFlexSpiMiscOffset_DdrModeEnable))
-            {
-                config->dataValidTime[0].time_100ps = 19; // 1.9 ns // 1/4 * cycle of 133MHz DDR
-            }
-            else
-            {
-                if (config->dataValidTime[0].delay_cells < 1)
-                {
-                    config->dataValidTime[0].time_100ps = 38; // 3.8 ns // 1/2 * cycle of 133MHz DDR
-                }
-            }
-        }
-        status = kStatus_Success;
-
-    } while (0);
-
-    return status;
-}
-#endif // #if BL_FEATURE_FLEXSPI_NOR_MODULE || BL_FEATURE_SPINAND_MODULE
 
 void dummy_byte_callback(uint8_t byte)
 {

@@ -422,7 +422,7 @@
       <GroupNumber>3</GroupNumber>
       <FileNumber>7</FileNumber>
       <FileType>1</FileType>
-      <tvExp>0</tvExp>
+      <tvExp>1</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
       <PathWithFileName>.\Sources\rom\flexspi_nor_flash.c</PathWithFileName>
@@ -439,18 +439,6 @@
       <bDave2>0</bDave2>
       <PathWithFileName>.\Sources\rom\hardware_init_MIMXRT1021.c</PathWithFileName>
       <FilenameWithoutPath>hardware_init_MIMXRT1021.c</FilenameWithoutPath>
-      <RteFlg>0</RteFlg>
-      <bShared>0</bShared>
-    </File>
-    <File>
-      <GroupNumber>3</GroupNumber>
-      <FileNumber>9</FileNumber>
-      <FileType>1</FileType>
-      <tvExp>0</tvExp>
-      <tvExpOptDlg>0</tvExpOptDlg>
-      <bDave2>0</bDave2>
-      <PathWithFileName>.\Sources\rom\microseconds_pit.c</PathWithFileName>
-      <FilenameWithoutPath>microseconds_pit.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>

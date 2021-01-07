@@ -102,6 +102,33 @@ enum _bl_status_groups
     kStatusGroup_SemcNAND = 212,        //!< SEMC NAND status group number.
 };
 
+#ifndef FREQ_1MHz
+#define FREQ_1MHz (1UL * 1000 * 1000)
+#endif
+#ifndef FREQ_24MHz
+#define FREQ_24MHz (24UL * 1000 * 1000)
+#endif
+#ifndef FREQ_396MHz
+#define FREQ_396MHz (396UL * 1000 * 1000)
+#endif
+#ifndef FREQ_432MHz
+#define FREQ_432MHz (432UL * 1000 * 1000)
+#endif
+#ifndef FREQ_480MHz
+#define FREQ_480MHz (480UL * 1000 * 1000)
+#endif
+#ifndef FREQ_500MHz
+#define FREQ_500MHz (500UL * 1000 * 1000)
+#endif
+#ifndef FREQ_508MHz
+#define FREQ_508MHz (508UL * 1000 * 1000)
+#endif
+#ifndef FREQ_528MHz
+#define FREQ_528MHz (528UL * 1000 * 1000)
+#endif
+
+#define SystemCoreClock 297000000UL
+
 //! @brief Driver status group numbers.
 //!
 //! @ingroup bl_core
