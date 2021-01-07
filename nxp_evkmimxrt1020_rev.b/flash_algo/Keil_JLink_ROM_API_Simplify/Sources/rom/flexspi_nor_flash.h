@@ -11,7 +11,7 @@
 #define __FLEXSPI_NOR_FLASH_H__
 
 #include "fsl_common.h"
-#include "bootloader_common.h"
+#include "bl_common.h"
 #include "bl_flexspi.h"
 
 /*  */
@@ -232,10 +232,10 @@ status_t flexspi_nor_flash_read(
     uint32_t instance, flexspi_nor_config_t *config, uint32_t *dst, uint32_t start, uint32_t bytes);
 
 //!@brief Write FlexSPI persistent content
-extern status_t flexspi_nor_write_persistent(const uint32_t data);
+status_t flexspi_nor_write_persistent(const uint32_t data);
 
 //!@brief Read FlexSPI persistent content
-extern status_t flexspi_nor_read_persistent(uint32_t *data);
+status_t flexspi_nor_read_persistent(uint32_t *data);
 
 //!@brief Restore Flash to SPI protocol
 status_t flexspi_nor_restore_spi_protocol(uint32_t instance,
