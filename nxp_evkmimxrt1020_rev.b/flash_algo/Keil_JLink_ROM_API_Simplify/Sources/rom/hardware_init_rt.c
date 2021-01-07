@@ -14,7 +14,6 @@
 #include <stdbool.h>
 
 #include "bl_flexspi.h"
-#include "MIMXRT1021.h"
 #include "bl_common.h"
 
 /*******************************************************************************
@@ -200,10 +199,28 @@ void flexspi_iomux_config_rt1020(uint32_t instance, flexspi_mem_config_t *config
     }
 }
 
+void flexspi_update_padsetting(flexspi_mem_config_t *config, uint32_t driveStrength)
+{
+    if (driveStrength)
+    {
+        config->controllerMiscOption |= FLEXSPI_BITMASK(kFlexSpiMiscOffset_PadSettingOverrideEnable);
+        config->dqsPadSettingOverride =
+            (FLEXSPI_DQS_SW_PAD_CTL_VAL & ~(0x07 << 3)) | (((driveStrength) << 3) & (0x07 << 3));
+        config->sclkPadSettingOverride =
+            (FLEXSPI_SW_PAD_CTL_VAL & ~(0x07 << 3)) | (((driveStrength) << 3) & (0x07 << 3));
+        config->dataPadSettingOverride =
+            (FLEXSPI_SW_PAD_CTL_VAL & ~(0x07 << 3)) | (((driveStrength) << 3) & (0x07 << 3));
+
+        config->csPadSettingOverride =
+            (FLEXSPI_DQS_SW_PAD_CTL_VAL & ~(0x07 << 3)) | (((driveStrength) << 3) & (0x07 << 3));
+    }
+}
+
 void flexspi_iomux_config(uint32_t instance, flexspi_mem_config_t *config)
 {
     flexspi_iomux_config_rt1020(instance, config);
 }
+
 
 void flexspi_clock_config(uint32_t instance, uint32_t freq, uint32_t sampleClkMode)
 {
@@ -327,6 +344,8 @@ status_t flexspi_set_failsafe_setting(flexspi_mem_config_t *config)
     return status;
 }
 
+
+
 // Get max supported Frequency in this SoC
 status_t flexspi_get_max_supported_freq(uint32_t instance, uint32_t *freq, uint32_t clkMode)
 {
@@ -345,58 +364,6 @@ status_t flexspi_get_max_supported_freq(uint32_t instance, uint32_t *freq, uint3
 
     return status;
 }
-
-/*! @brief PLL PFD name */
-typedef enum _clock_pfd
-{
-    kCLOCK_Pfd0 = 0U, /*!< PLL PFD0 */
-    kCLOCK_Pfd1 = 1U, /*!< PLL PFD1 */
-    kCLOCK_Pfd2 = 2U, /*!< PLL PFD2 */
-    kCLOCK_Pfd3 = 3U, /*!< PLL PFD3 */
-} clock_pfd_t;
-
-#define CCM_ANALOG_TUPLE(reg, shift) ((((reg)&0xFFFU) << 16U) | (shift))
-#define CCM_ANALOG_TUPLE_SHIFT(tuple) (((uint32_t)(tuple)) & 0x1FU)
-#define CCM_ANALOG_TUPLE_REG_OFF(base, tuple, off) \
-    (*((volatile uint32_t *)((uint32_t)(base) + (((uint32_t)(tuple) >> 16U) & 0xFFFU) + (off))))
-#define CCM_ANALOG_TUPLE_REG(base, tuple) CCM_ANALOG_TUPLE_REG_OFF(base, tuple, 0U)
-/*!
- * @brief CCM Analog registers offset.
- */
-#define PLL_SYS_OFFSET 0x30
-#define PLL_USB1_OFFSET 0x10
-#define PLL_AUDIO_OFFSET 0x70
-#define PLL_ENET_OFFSET 0xE0
-
-#define CCM_ANALOG_PLL_BYPASS_SHIFT (16U)
-#define CCM_ANALOG_PLL_BYPASS_CLK_SRC_MASK (0xC000U)
-#define CCM_ANALOG_PLL_BYPASS_CLK_SRC_SHIFT (14U)		
-
-#define CLKPN_FREQ 0U
-		
-/*!@brief PLL clock source, bypass cloco source also */
-enum _clock_pll_clk_src
-{
-    kCLOCK_PllClkSrc24M = 0U, /*!< Pll clock source 24M */
-    kCLOCK_PllSrcClkPN  = 1U, /*!< Pll clock source CLK1_P and CLK1_N */
-};
-		
-/*! @brief PLL name */
-typedef enum _clock_pll
-{
-    kCLOCK_PllSys   = CCM_ANALOG_TUPLE(PLL_SYS_OFFSET, CCM_ANALOG_PLL_SYS_ENABLE_SHIFT),     /*!< PLL SYS */
-    kCLOCK_PllUsb1  = CCM_ANALOG_TUPLE(PLL_USB1_OFFSET, CCM_ANALOG_PLL_USB1_ENABLE_SHIFT),   /*!< PLL USB1 */
-    kCLOCK_PllAudio = CCM_ANALOG_TUPLE(PLL_AUDIO_OFFSET, CCM_ANALOG_PLL_AUDIO_ENABLE_SHIFT), /*!< PLL Audio */
-
-    kCLOCK_PllEnet = CCM_ANALOG_TUPLE(PLL_ENET_OFFSET, CCM_ANALOG_PLL_ENET_ENABLE_SHIFT), /*!< PLL Enet0 */
-
-    kCLOCK_PllEnet500M = CCM_ANALOG_TUPLE(PLL_ENET_OFFSET, CCM_ANALOG_PLL_ENET_ENET_500M_REF_EN_SHIFT), /*!< PLL ENET */
-
-    kCLOCK_PllEnet25M = CCM_ANALOG_TUPLE(PLL_ENET_OFFSET, CCM_ANALOG_PLL_ENET_ENET_25M_REF_EN_SHIFT), /*!< PLL Enet1 */
-
-} clock_pll_t;
-
-typedef uint64_t clock_64b_t;
 
 static inline bool CLOCK_IsPllEnabled(CCM_ANALOG_Type *base, clock_pll_t pll)
 {
@@ -704,26 +671,6 @@ void flexspi_sw_delay_us(uint64_t us)
         {
             __NOP();
         }
-    }
-}
-
-void flexspi_update_padsetting(flexspi_mem_config_t *config, uint32_t driveStrength)
-{
-#define IOMUXC_PAD_SETTING_DSE_SHIFT (3)
-#define IOMUXC_PAD_SETTING_DSE_MASK (0x07 << IOMUXC_PAD_SETTING_DSE_SHIFT)
-#define IOMUXC_PAD_SETTING_DSE(x) (((x) << IOMUXC_PAD_SETTING_DSE_SHIFT) & IOMUXC_PAD_SETTING_DSE_MASK)
-    if (driveStrength)
-    {
-        config->controllerMiscOption |= FLEXSPI_BITMASK(kFlexSpiMiscOffset_PadSettingOverrideEnable);
-        config->dqsPadSettingOverride =
-            (FLEXSPI_DQS_SW_PAD_CTL_VAL & ~IOMUXC_PAD_SETTING_DSE_MASK) | IOMUXC_PAD_SETTING_DSE(driveStrength);
-        config->sclkPadSettingOverride =
-            (FLEXSPI_SW_PAD_CTL_VAL & ~IOMUXC_PAD_SETTING_DSE_MASK) | IOMUXC_PAD_SETTING_DSE(driveStrength);
-        config->dataPadSettingOverride =
-            (FLEXSPI_SW_PAD_CTL_VAL & ~IOMUXC_PAD_SETTING_DSE_MASK) | IOMUXC_PAD_SETTING_DSE(driveStrength);
-
-        config->csPadSettingOverride =
-            (FLEXSPI_DQS_SW_PAD_CTL_VAL & ~IOMUXC_PAD_SETTING_DSE_MASK) | IOMUXC_PAD_SETTING_DSE(driveStrength);
     }
 }
 

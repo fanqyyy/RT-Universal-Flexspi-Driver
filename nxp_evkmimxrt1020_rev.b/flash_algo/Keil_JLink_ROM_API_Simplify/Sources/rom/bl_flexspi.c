@@ -10,7 +10,6 @@
 #include <stdbool.h>
 
 #include "bl_flexspi.h"
-#include "MIMXRT1021.h"
 #include "bl_common.h"
 
 /*******************************************************************************

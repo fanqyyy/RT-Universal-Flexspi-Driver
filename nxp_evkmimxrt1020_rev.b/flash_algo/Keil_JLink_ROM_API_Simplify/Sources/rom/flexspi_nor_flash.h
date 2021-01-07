@@ -10,7 +10,6 @@
 #ifndef __FLEXSPI_NOR_FLASH_H__
 #define __FLEXSPI_NOR_FLASH_H__
 
-#include "fsl_common.h"
 #include "bl_common.h"
 #include "bl_flexspi.h"
 
