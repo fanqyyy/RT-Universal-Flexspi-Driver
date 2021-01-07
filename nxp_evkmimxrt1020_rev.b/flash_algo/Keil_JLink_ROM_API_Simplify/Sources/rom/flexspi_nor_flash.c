@@ -443,7 +443,6 @@ static status_t prepare_0_4_4_mode_enable_sequence(uint32_t instance,
  * Code
  *******************************************************************************/
 
-#if (!BL_FEATURE_HAS_FLEXSPI_NOR_ROMAPI) || (!ROM_API_HAS_FLEXSPI_NOR_INIT)
 // See flexspi_nor_flash.h for more details
 status_t flexspi_nor_flash_init(uint32_t instance, flexspi_nor_config_t *config)
 {
@@ -470,7 +469,6 @@ status_t flexspi_nor_flash_init(uint32_t instance, flexspi_nor_config_t *config)
 
     return status;
 }
-#endif // #if (!BL_FEATURE_HAS_FLEXSPI_NOR_ROMAPI) || (!ROM_API_HAS_FLEXSPI_NOR_INIT)
 
 status_t flexspi_nor_exit_no_cmd_mode(uint32_t instance,
                                       flexspi_nor_config_t *config,
@@ -687,7 +685,6 @@ void flexspi_change_serial_clock(uint32_t instance, flexspi_nor_config_t *config
     } while (0);
 }
 
-#if (!BL_FEATURE_HAS_FLEXSPI_NOR_ROMAPI) || (!ROM_API_HAS_FELXSPI_NOR_PROGRAM)
 // See flexspi_nor_flash.h for more details
 status_t flexspi_nor_flash_page_program(uint32_t instance,
                                         flexspi_nor_config_t *config,
@@ -763,9 +760,7 @@ status_t flexspi_nor_flash_page_program(uint32_t instance,
 
     return status;
 }
-#endif // #if (!BL_FEATURE_HAS_FLEXSPI_NOR_ROMAPI) || (!ROM_API_HAS_FELXSPI_NOR_PROGRAM)
 
-#if (!BL_FEATURE_HAS_FLEXSPI_NOR_ROMAPI) || (!ROM_API_HAS_FLEXSPI_NOR_ERASE_ALL)
 // See flexspi_nor_flash.h for more details
 status_t flexspi_nor_flash_erase_all(uint32_t instance, flexspi_nor_config_t *config)
 {
@@ -859,9 +854,7 @@ status_t flexspi_nor_flash_erase_all(uint32_t instance, flexspi_nor_config_t *co
 
     return status;
 }
-#endif // #if (!BL_FEATURE_HAS_FLEXSPI_NOR_ROMAPI) || (!ROM_API_HAS_FLEXSPI_NOR_ERASE_ALL)
 
-#if (!BL_FEATURE_HAS_FLEXSPI_NOR_ROMAPI) || (!ROM_API_HAS_FLEXSPI_NOR_ERASE_SECTOR)
 // See flexspi_nor_flash.h for more details.
 status_t flexspi_nor_flash_erase_sector(uint32_t instance, flexspi_nor_config_t *config, uint32_t address)
 {
@@ -930,9 +923,7 @@ status_t flexspi_nor_flash_erase_sector(uint32_t instance, flexspi_nor_config_t 
 
     return status;
 }
-#endif // #if (!BL_FEATURE_HAS_FLEXSPI_NOR_ROMAPI) || (!ROM_API_HAS_FLEXSPI_NOR_ERASE_SECTOR)
 
-#if (!BL_FEATURE_HAS_FLEXSPI_NOR_ROMAPI) || (!ROM_API_HAS_FLEXSPI_NOR_ERASE_BLOCK)
 status_t flexspi_nor_flash_erase_block(uint32_t instance, flexspi_nor_config_t *config, uint32_t address)
 {
     status_t status;
@@ -1000,7 +991,6 @@ status_t flexspi_nor_flash_erase_block(uint32_t instance, flexspi_nor_config_t *
 
     return status;
 }
-#endif // #if (!BL_FEATURE_HAS_FLEXSPI_NOR_ROMAPI) || (!ROM_API_HAS_FLEXSPI_NOR_ERASE_BLOCK)
 
 // Read SFDP parameters from specified offset
 status_t flexspi_nor_read_sfdp(uint32_t instance, uint32_t addr, uint32_t *buffer, uint32_t bytes)
@@ -3298,7 +3288,6 @@ status_t flexspi_nor_generate_config_block_adesto_octalflash(uint32_t instance,
     return status;
 }
 
-#if (!BL_FEATURE_HAS_FLEXSPI_NOR_ROMAPI) || (!ROM_API_HAS_FLEXSPI_NOR_GET_CFG)
 // See flexspi_nor_flash.h for more details.
 status_t flexspi_nor_get_config(uint32_t instance, flexspi_nor_config_t *config, serial_nor_config_option_t *option)
 {
@@ -3412,9 +3401,7 @@ status_t flexspi_nor_get_config(uint32_t instance, flexspi_nor_config_t *config,
 
     return status;
 }
-#endif // #if (!BL_FEATURE_HAS_FLEXSPI_NOR_ROMAPI) || (!ROM_API_HAS_FLEXSPI_NOR_GET_CFG)
 
-#if (!BL_FEATURE_HAS_FLEXSPI_NOR_ROMAPI) || (!ROM_API_HAS_FLEXSPI_NOR_ERASE)
 // See flexspi_nor_flash.h for more details.
 status_t flexspi_nor_flash_erase(uint32_t instance, flexspi_nor_config_t *config, uint32_t start, uint32_t length)
 {
@@ -3476,9 +3463,7 @@ status_t flexspi_nor_flash_erase(uint32_t instance, flexspi_nor_config_t *config
 
     return status;
 }
-#endif // #if (!BL_FEATURE_HAS_FLEXSPI_NOR_ROMAPI) || (!ROM_API_HAS_FLEXSPI_NOR_ERASE)
 
-#if (!BL_FEATURE_HAS_FLEXSPI_NOR_ROMAPI) || (!ROM_API_HAS_FLEXSPI_NOR_READ)
 // See flexspi_nor_flash.h for more details.
 status_t flexspi_nor_flash_read(
     uint32_t instance, flexspi_nor_config_t *config, uint32_t *dst, uint32_t start, uint32_t bytes)
@@ -3522,7 +3507,6 @@ status_t flexspi_nor_flash_read(
 
     return status;
 }
-#endif // #if (!BL_FEATURE_HAS_FLEXSPI_NOR_ROMAPI) || (!ROM_API_HAS_FLEXSPI_NOR_READ)
 
 //!@brief Write FlexSPI persistent content
 status_t flexspi_nor_write_persistent(const uint32_t data)

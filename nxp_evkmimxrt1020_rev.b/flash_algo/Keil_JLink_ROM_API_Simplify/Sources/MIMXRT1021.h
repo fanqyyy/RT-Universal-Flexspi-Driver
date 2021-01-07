@@ -19146,8 +19146,8 @@ typedef struct {
 
 /*! @name SW_MUX_CTL_PAD - SW_MUX_CTL_PAD_GPIO_EMC_00 SW MUX Control Register..SW_MUX_CTL_PAD_GPIO_SD_B1_11 SW MUX Control Register */
 /*! @{ */
-#define IOMUXC_SW_MUX_CTL_PAD_MUX_MODE_MASK      (0x7U)
-#define IOMUXC_SW_MUX_CTL_PAD_MUX_MODE_SHIFT     (0U)
+//#define IOMUXC_SW_MUX_CTL_PAD_MUX_MODE_MASK      (0x7U)
+//#define IOMUXC_SW_MUX_CTL_PAD_MUX_MODE_SHIFT     (0U)
 /*! MUX_MODE - MUX Mode Select Field.
  *  0b000..Select mux mode: ALT0 mux port: SEMC_DATA00 of instance: semc
  *  0b001..Select mux mode: ALT1 mux port: QTIMER2_TIMER0 of instance: qtimer2
@@ -19158,7 +19158,7 @@ typedef struct {
  *  0b110..Select mux mode: ALT6 mux port: FLEXCAN1_TX of instance: flexcan1
  *  0b111..Select mux mode: ALT7 mux port: PIT_TRIGGER02 of instance: pit
  */
-#define IOMUXC_SW_MUX_CTL_PAD_MUX_MODE(x)        (((uint32_t)(((uint32_t)(x)) << IOMUXC_SW_MUX_CTL_PAD_MUX_MODE_SHIFT)) & IOMUXC_SW_MUX_CTL_PAD_MUX_MODE_MASK)
+//#define IOMUXC_SW_MUX_CTL_PAD_MUX_MODE(x)        (((uint32_t)(((uint32_t)(x)) << IOMUXC_SW_MUX_CTL_PAD_MUX_MODE_SHIFT)) & IOMUXC_SW_MUX_CTL_PAD_MUX_MODE_MASK)
 #define IOMUXC_SW_MUX_CTL_PAD_SION_MASK          (0x10U)
 #define IOMUXC_SW_MUX_CTL_PAD_SION_SHIFT         (4U)
 /*! SION - Software Input On Field.
@@ -19173,13 +19173,13 @@ typedef struct {
 
 /*! @name SW_PAD_CTL_PAD - SW_PAD_CTL_PAD_GPIO_EMC_00 SW PAD Control Register..SW_PAD_CTL_PAD_GPIO_SD_B1_11 SW PAD Control Register */
 /*! @{ */
-#define IOMUXC_SW_PAD_CTL_PAD_SRE_MASK           (0x1U)
-#define IOMUXC_SW_PAD_CTL_PAD_SRE_SHIFT          (0U)
+//#define IOMUXC_SW_PAD_CTL_PAD_SRE_MASK           (0x1U)
+//#define IOMUXC_SW_PAD_CTL_PAD_SRE_SHIFT          (0U)
 /*! SRE - Slew Rate Field
  *  0b0..Slow Slew Rate
  *  0b1..Fast Slew Rate
  */
-#define IOMUXC_SW_PAD_CTL_PAD_SRE(x)             (((uint32_t)(((uint32_t)(x)) << IOMUXC_SW_PAD_CTL_PAD_SRE_SHIFT)) & IOMUXC_SW_PAD_CTL_PAD_SRE_MASK)
+//#define IOMUXC_SW_PAD_CTL_PAD_SRE(x)             (((uint32_t)(((uint32_t)(x)) << IOMUXC_SW_PAD_CTL_PAD_SRE_SHIFT)) & IOMUXC_SW_PAD_CTL_PAD_SRE_MASK)
 #define IOMUXC_SW_PAD_CTL_PAD_DSE_MASK           (0x38U)
 #define IOMUXC_SW_PAD_CTL_PAD_DSE_SHIFT          (3U)
 /*! DSE - Drive Strength Field
@@ -19192,16 +19192,16 @@ typedef struct {
  *  0b110..R0/6
  *  0b111..R0/7
  */
-#define IOMUXC_SW_PAD_CTL_PAD_DSE(x)             (((uint32_t)(((uint32_t)(x)) << IOMUXC_SW_PAD_CTL_PAD_DSE_SHIFT)) & IOMUXC_SW_PAD_CTL_PAD_DSE_MASK)
-#define IOMUXC_SW_PAD_CTL_PAD_SPEED_MASK         (0xC0U)
-#define IOMUXC_SW_PAD_CTL_PAD_SPEED_SHIFT        (6U)
+//#define IOMUXC_SW_PAD_CTL_PAD_DSE(x)             (((uint32_t)(((uint32_t)(x)) << IOMUXC_SW_PAD_CTL_PAD_DSE_SHIFT)) & IOMUXC_SW_PAD_CTL_PAD_DSE_MASK)
+//#define IOMUXC_SW_PAD_CTL_PAD_SPEED_MASK         (0xC0U)
+//#define IOMUXC_SW_PAD_CTL_PAD_SPEED_SHIFT        (6U)
 /*! SPEED - Speed Field
  *  0b00..low(50MHz)
  *  0b01..medium(100MHz)
  *  0b10..medium(100MHz)
  *  0b11..max(200MHz)
  */
-#define IOMUXC_SW_PAD_CTL_PAD_SPEED(x)           (((uint32_t)(((uint32_t)(x)) << IOMUXC_SW_PAD_CTL_PAD_SPEED_SHIFT)) & IOMUXC_SW_PAD_CTL_PAD_SPEED_MASK)
+//#define IOMUXC_SW_PAD_CTL_PAD_SPEED(x)           (((uint32_t)(((uint32_t)(x)) << IOMUXC_SW_PAD_CTL_PAD_SPEED_SHIFT)) & IOMUXC_SW_PAD_CTL_PAD_SPEED_MASK)
 #define IOMUXC_SW_PAD_CTL_PAD_ODE_MASK           (0x800U)
 #define IOMUXC_SW_PAD_CTL_PAD_ODE_SHIFT          (11U)
 /*! ODE - Open Drain Enable Field
@@ -19209,29 +19209,29 @@ typedef struct {
  *  0b1..Open Drain Enabled
  */
 #define IOMUXC_SW_PAD_CTL_PAD_ODE(x)             (((uint32_t)(((uint32_t)(x)) << IOMUXC_SW_PAD_CTL_PAD_ODE_SHIFT)) & IOMUXC_SW_PAD_CTL_PAD_ODE_MASK)
-#define IOMUXC_SW_PAD_CTL_PAD_PKE_MASK           (0x1000U)
-#define IOMUXC_SW_PAD_CTL_PAD_PKE_SHIFT          (12U)
+//#define IOMUXC_SW_PAD_CTL_PAD_PKE_MASK           (0x1000U)
+//#define IOMUXC_SW_PAD_CTL_PAD_PKE_SHIFT          (12U)
 /*! PKE - Pull / Keep Enable Field
  *  0b0..Pull/Keeper Disabled
  *  0b1..Pull/Keeper Enabled
  */
-#define IOMUXC_SW_PAD_CTL_PAD_PKE(x)             (((uint32_t)(((uint32_t)(x)) << IOMUXC_SW_PAD_CTL_PAD_PKE_SHIFT)) & IOMUXC_SW_PAD_CTL_PAD_PKE_MASK)
-#define IOMUXC_SW_PAD_CTL_PAD_PUE_MASK           (0x2000U)
-#define IOMUXC_SW_PAD_CTL_PAD_PUE_SHIFT          (13U)
+//#define IOMUXC_SW_PAD_CTL_PAD_PKE(x)             (((uint32_t)(((uint32_t)(x)) << IOMUXC_SW_PAD_CTL_PAD_PKE_SHIFT)) & IOMUXC_SW_PAD_CTL_PAD_PKE_MASK)
+//#define IOMUXC_SW_PAD_CTL_PAD_PUE_MASK           (0x2000U)
+//#define IOMUXC_SW_PAD_CTL_PAD_PUE_SHIFT          (13U)
 /*! PUE - Pull / Keep Select Field
  *  0b0..Keeper
  *  0b1..Pull
  */
-#define IOMUXC_SW_PAD_CTL_PAD_PUE(x)             (((uint32_t)(((uint32_t)(x)) << IOMUXC_SW_PAD_CTL_PAD_PUE_SHIFT)) & IOMUXC_SW_PAD_CTL_PAD_PUE_MASK)
-#define IOMUXC_SW_PAD_CTL_PAD_PUS_MASK           (0xC000U)
-#define IOMUXC_SW_PAD_CTL_PAD_PUS_SHIFT          (14U)
+//#define IOMUXC_SW_PAD_CTL_PAD_PUE(x)             (((uint32_t)(((uint32_t)(x)) << IOMUXC_SW_PAD_CTL_PAD_PUE_SHIFT)) & IOMUXC_SW_PAD_CTL_PAD_PUE_MASK)
+//#define IOMUXC_SW_PAD_CTL_PAD_PUS_MASK           (0xC000U)
+//#define IOMUXC_SW_PAD_CTL_PAD_PUS_SHIFT          (14U)
 /*! PUS - Pull Up / Down Config. Field
  *  0b00..100K Ohm Pull Down
  *  0b01..47K Ohm Pull Up
  *  0b10..100K Ohm Pull Up
  *  0b11..22K Ohm Pull Up
  */
-#define IOMUXC_SW_PAD_CTL_PAD_PUS(x)             (((uint32_t)(((uint32_t)(x)) << IOMUXC_SW_PAD_CTL_PAD_PUS_SHIFT)) & IOMUXC_SW_PAD_CTL_PAD_PUS_MASK)
+//#define IOMUXC_SW_PAD_CTL_PAD_PUS(x)             (((uint32_t)(((uint32_t)(x)) << IOMUXC_SW_PAD_CTL_PAD_PUS_SHIFT)) & IOMUXC_SW_PAD_CTL_PAD_PUS_MASK)
 #define IOMUXC_SW_PAD_CTL_PAD_HYS_MASK           (0x10000U)
 #define IOMUXC_SW_PAD_CTL_PAD_HYS_SHIFT          (16U)
 /*! HYS - Hyst. Enable Field
