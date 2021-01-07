@@ -12,7 +12,6 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdio.h>
-#include "bootloader_config.h"
 #include "fsl_common.h"
 
 ////////////////////////////////////////////////////////////////////////////////
