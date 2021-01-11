@@ -5,8 +5,8 @@
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
-#ifndef __BOOTLOADER_COMMON_H__
-#define __BOOTLOADER_COMMON_H__
+#ifndef __BL_COMMON_H__
+#define __BL_COMMON_H__
 
 #include <assert.h>
 #include <stdbool.h>
@@ -6581,7 +6581,7 @@ enum _clock_pll_clk_src
     kCLOCK_PllSrcClkPN  = 1U, /*!< Pll clock source CLK1_P and CLK1_N */
 };
 
-#endif // __BOOTLOADER_COMMON_H__
+#endif // __BL_COMMON_H__
 ////////////////////////////////////////////////////////////////////////////////
 // EOF
 ////////////////////////////////////////////////////////////////////////////////
