@@ -2957,7 +2957,6 @@ status_t flexspi_nor_get_config(uint32_t instance, flexspi_nor_config_t *config,
             case kSerialNorCfgOption_DeviceType_ReadSFDP_DDR:
                 status = flexspi_nor_generate_config_block_using_sfdp(instance, config, option);
                 break;
-#if defined(BL_FEATURE_FLEXSPI_8WIRE_SUPPORT) && BL_FEATURE_FLEXSPI_8WIRE_SUPPORT
             case kSerialNorCfgOption_DeviceType_HyperFLASH1V8:
                 status = flexspi_nor_generate_config_block_hyperflash(instance, config, true);
                 break;
@@ -2972,7 +2971,6 @@ status_t flexspi_nor_get_config(uint32_t instance, flexspi_nor_config_t *config,
             case kSerialNorCfgOption_DeviceType_MicronOctalSDR:
                 status = flexspi_nor_generate_config_block_micron_octalflash(instance, config, option);
                 break;
-#endif // defined(BL_FEATURE_FLEXSPI_8WIRE_SUPPORT) && BL_FEATURE_FLEXSPI_8WIRE_SUPPORT
             default:
                 status = kStatus_InvalidArgument;
                 break;

@@ -246,8 +246,20 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>.\Sources\ROM\flexspi_nor_flash_MIMXRT1011.c</PathWithFileName>
-      <FilenameWithoutPath>flexspi_nor_flash_MIMXRT1011.c</FilenameWithoutPath>
+      <PathWithFileName>.\Sources\rom\flexspi_nor_flash.c</PathWithFileName>
+      <FilenameWithoutPath>flexspi_nor_flash.c</FilenameWithoutPath>
+      <RteFlg>0</RteFlg>
+      <bShared>0</bShared>
+    </File>
+    <File>
+      <GroupNumber>3</GroupNumber>
+      <FileNumber>5</FileNumber>
+      <FileType>1</FileType>
+      <tvExp>0</tvExp>
+      <tvExpOptDlg>0</tvExpOptDlg>
+      <bDave2>0</bDave2>
+      <PathWithFileName>.\Sources\rom\hardware_init_rt.c</PathWithFileName>
+      <FilenameWithoutPath>hardware_init_rt.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>

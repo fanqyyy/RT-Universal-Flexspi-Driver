@@ -409,9 +409,14 @@
               <FilePath>.\Sources\ROM\bl_flexspi.c</FilePath>
             </File>
             <File>
-              <FileName>flexspi_nor_flash_MIMXRT1011.c</FileName>
+              <FileName>flexspi_nor_flash.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\Sources\ROM\flexspi_nor_flash_MIMXRT1011.c</FilePath>
+              <FilePath>.\Sources\rom\flexspi_nor_flash.c</FilePath>
+            </File>
+            <File>
+              <FileName>hardware_init_rt.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\rom\hardware_init_rt.c</FilePath>
             </File>
           </Files>
         </Group>

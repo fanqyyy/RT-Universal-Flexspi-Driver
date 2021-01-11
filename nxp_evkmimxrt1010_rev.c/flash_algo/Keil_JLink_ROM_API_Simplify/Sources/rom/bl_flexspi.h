@@ -10,7 +10,7 @@
 #ifndef __FSL_FLEXSPI_H__
 #define __FSL_FLEXSPI_H__
 
-#include "fsl_common.h"
+#include "bl_common.h"
 
 /**********************************************************************************************************************
  * Definitions
