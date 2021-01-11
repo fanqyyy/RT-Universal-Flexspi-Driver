@@ -54,7 +54,7 @@
           <CreateLib>0</CreateLib>
           <CreateHexFile>0</CreateHexFile>
           <DebugInformation>1</DebugInformation>
-          <BrowseInformation>0</BrowseInformation>
+          <BrowseInformation>1</BrowseInformation>
           <ListingPath>.\</ListingPath>
           <HexFormatSelection>1</HexFormatSelection>
           <Merge32K>0</Merge32K>
@@ -313,7 +313,7 @@
           </ArmAdsMisc>
           <Cads>
             <interw>0</interw>
-            <Optim>1</Optim>
+            <Optim>4</Optim>
             <oTime>0</oTime>
             <SplitLS>0</SplitLS>
             <OneElfS>0</OneElfS>
@@ -412,6 +412,11 @@
               <FileName>flexspi_nor_flash.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Sources\rom\flexspi_nor_flash.c</FilePath>
+            </File>
+            <File>
+              <FileName>hardware_init_rt.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\rom\hardware_init_rt.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -822,6 +827,11 @@
               <FileName>flexspi_nor_flash.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Sources\rom\flexspi_nor_flash.c</FilePath>
+            </File>
+            <File>
+              <FileName>hardware_init_rt.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\rom\hardware_init_rt.c</FilePath>
             </File>
           </Files>
         </Group>

@@ -10,7 +10,6 @@
 #include <stdbool.h>
 
 #include "bl_flexspi.h"
-#include "fsl_device_registers.h"
 #include "bl_common.h"
 /*******************************************************************************
  * Definitions
@@ -107,34 +106,6 @@ bool flexspi_is_parallel_mode(flexspi_mem_config_t *config)
     }
 }
 
-uint32_t get_arm_pll(void)
-{
-
-    uint32_t arm_pll;
-    uint32_t arm_podf;
-    if (CCM_ANALOG->PLL_ARM & CCM_ANALOG_PLL_ARM_BYPASS_MASK)
-    {
-        arm_pll = FREQ_24MHz;
-    }
-    else
-    {
-        uint32_t div_select = (CCM_ANALOG->PLL_ARM & CCM_ANALOG_PLL_ARM_DIV_SELECT_MASK) >> CCM_ANALOG_PLL_ARM_DIV_SELECT_SHIFT;
-        arm_pll = FREQ_24MHz * div_select / 2;
-    }
-    arm_podf = 1 + ((CCM->CACRR & CCM_CACRR_ARM_PODF_MASK) >> CCM_CACRR_ARM_PODF_SHIFT);
-    arm_pll /= arm_podf;
-    return arm_pll;
-}
-
-uint32_t get_core_clock(void)
-{
-    uint32_t arm_pll = get_arm_pll();
-    uint32_t ahb_podf = 1 + ((CCM->CBCDR & CCM_CBCDR_AHB_PODF_MASK) >> CCM_CBCDR_AHB_PODF_SHIFT);
-    uint32_t core_clock = arm_pll / ahb_podf;
-
-    return core_clock;
-}
-
 //!@brief Get Clock for FlexSPI peripheral
 status_t flexspi_get_clock(uint32_t instance, flexspi_clock_type_t type, uint32_t *freq)
 {
@@ -184,21 +155,6 @@ status_t flexspi_get_clock(uint32_t instance, flexspi_clock_type_t type, uint32_
     return status;
 }
 
-bool is_flexspi_2nd_bootpin(void)
-{ 
-    bool is_2nd_bootpin_selected = false;
-    if ((ROM_OCOTP_FLASH_TYPE_VALUE() == 0x07) || ROM_OCOTP_QSPI_SIP_2ND_BOOT_PIN_ENABLE_VALUE())
-    {
-        is_2nd_bootpin_selected = true;
-    }
-    else
-    {
-        is_2nd_bootpin_selected = false;
-    }
-
-    return is_2nd_bootpin_selected;
-}
-
 //!@brief Gate on the clock for the FlexSPI peripheral
 void flexspi_clock_gate_enable(uint32_t instance)
 {
@@ -211,267 +167,6 @@ void flexspi_clock_gate_disable(uint32_t instance)
     CCM->CCGR6 &= (uint32_t)~CCM_CCGR6_CG5_MASK;
 }
 
-void flexspi_iomux_config(uint32_t instance, flexspi_mem_config_t *config)
-{
-
-    uint32_t csPadCtlValue = config->csPadSettingOverride ? config->csPadSettingOverride: FLEXSPI_SW_PAD_CTL_VAL;
-    uint32_t dqsPadCtlValue = config->csPadSettingOverride ? config->csPadSettingOverride: FLEXSPI_DQS_SW_PAD_CTL_VAL;
-    uint32_t sclkPadCtlValue = config->sclkPadSettingOverride? config->sclkPadSettingOverride: FLEXSPI_SW_PAD_CTL_VAL;
-    uint32_t dataPadCtlValue = config->dataPadSettingOverride ? config->dataPadSettingOverride: FLEXSPI_SW_PAD_CTL_VAL;
-	
-    if (is_flexspi_2nd_bootpin())
-    {
-        // The secondary FlexSPI Pinmux, supports only 1 Flash
-        if (config->sflashA1Size > 0)
-        {
-            // FLEXSPIA_SS0_B
-            IOMUXC->SW_MUX_CTL_PAD[SW_MUX_CTL_PAD_FLEXSPIA_SEC_SS0_B_IDX] = FLEXSPIA_SEC_MUX_VAL;
-            IOMUXC->SW_PAD_CTL_PAD[SW_PAD_CTL_PAD_FLEXSPIA_SEC_SS0_B_IDX] = csPadCtlValue;
-            // FLEXSPIA_SCLK
-            IOMUXC->SW_MUX_CTL_PAD[SW_MUX_CTL_PAD_FLEXSPIA_SEC_SCLK_IDX] = FLEXSPIA_SEC_MUX_VAL | IOMUXC_SW_MUX_CTL_PAD_SION(1);
-            IOMUXC->SW_PAD_CTL_PAD[SW_PAD_CTL_PAD_FLEXSPIA_SEC_SCLK_IDX] = sclkPadCtlValue;
-            IOMUXC->SELECT_INPUT[SELECT_INPUT_FLEXSPIA_SEC_SCLK_IDX]  = 0x01;
-
-             // FLEXSPIA_DATA0
-            IOMUXC->SW_MUX_CTL_PAD[SW_MUX_CTL_PAD_FLEXSPIA_SEC_DATA0_IDX] = FLEXSPIA_SEC_MUX_VAL;
-            IOMUXC->SW_PAD_CTL_PAD[SW_PAD_CTL_PAD_FLEXSPIA_SEC_DATA0_IDX] = dataPadCtlValue;
-            IOMUXC->SELECT_INPUT[SELECT_INPUT_FLEXSPIA_SEC_DATA0_IDX]  = 0x01;
-
-            // FLEXSPIA_DATA1
-            IOMUXC->SW_MUX_CTL_PAD[SW_MUX_CTL_PAD_FLEXSPIA_SEC_DATA1_IDX] = FLEXSPIA_SEC_MUX_VAL;
-            IOMUXC->SW_PAD_CTL_PAD[SW_PAD_CTL_PAD_FLEXSPIA_SEC_DATA1_IDX] = dataPadCtlValue;
-            IOMUXC->SELECT_INPUT[SELECT_INPUT_FLEXSPIA_SEC_DATA1_IDX]  = 0x01;
-
-            // FLEXSPIA_DATA2
-            IOMUXC->SW_MUX_CTL_PAD[SW_MUX_CTL_PAD_FLEXSPIA_SEC_DATA2_IDX] = FLEXSPIA_SEC_MUX_VAL;
-            IOMUXC->SW_PAD_CTL_PAD[SW_PAD_CTL_PAD_FLEXSPIA_SEC_DATA2_IDX] = dataPadCtlValue;
-            IOMUXC->SELECT_INPUT[SELECT_INPUT_FLEXSPIA_SEC_DATA2_IDX]  = 0x01;
-
-            // FLEXSPIA_DATA3
-            IOMUXC->SW_MUX_CTL_PAD[SW_MUX_CTL_PAD_FLEXSPIA_SEC_DATA3_IDX] = FLEXSPIA_SEC_MUX_VAL;
-            IOMUXC->SW_PAD_CTL_PAD[SW_PAD_CTL_PAD_FLEXSPIA_SEC_DATA3_IDX] = dataPadCtlValue;
-            IOMUXC->SELECT_INPUT[SELECT_INPUT_FLEXSPIA_SEC_DATA3_IDX]  = 0x01;
-
-
-            // Configure DQS pad
-            if ((config->readSampleClkSrc == kFlexSPIReadSampleClk_ExternalInputFromDqsPad) ||
-                (config->readSampleClkSrc == kFlexSPIReadSampleClk_LoopbackFromDqsPad))
-            {
-                // FLEXSPIA_DQS
-                IOMUXC->SW_MUX_CTL_PAD[SW_MUX_CTL_PAD_FLEXSPIA_SEC_DQS_IDX] = FLEXSPIA_SEC_MUX_VAL | IOMUXC_SW_MUX_CTL_PAD_SION(1);
-                IOMUXC->SW_PAD_CTL_PAD[SW_PAD_CTL_PAD_FLEXSPIA_SEC_DQS_IDX] = dqsPadCtlValue;
-                IOMUXC->SELECT_INPUT[SELECT_INPUT_FLEXSPIA_SEC_DQS_IDX]  = 0x01;
-            }
-        }
-    }
-    else // The primary FlexSPI pinmux, support octal Flash and up to 4 QuadSPI NOR Flash
-    {
-        // Pinmux configuration for FLEXSPI PortA
-        if (config->sflashA1Size || config->sflashA2Size)
-        {
-            if (config->sflashA2Size)
-            {
-                // FLEXSPIA_SS1_B
-                IOMUXC->SW_MUX_CTL_PAD[SW_MUX_CTL_PAD_FLEXSPIA_SS1_B_IDX] = FLEXSPIA_SS1_MUX_VAL;
-                IOMUXC->SW_PAD_CTL_PAD[SW_PAD_CTL_PAD_FLEXSPIA_SS1_B_IDX] = csPadCtlValue;
-            }
-
-            // Basic pinmux configuration for FLEXSPI
-            if (config->sflashA1Size)
-            {
-                // FLEXSPIA_SS0_B
-                IOMUXC->SW_MUX_CTL_PAD[SW_MUX_CTL_PAD_FLEXSPIA_SS0_B_IDX] = FLEXSPIA_MUX_VAL;
-                IOMUXC->SW_PAD_CTL_PAD[SW_PAD_CTL_PAD_FLEXSPIA_SS0_B_IDX] = csPadCtlValue;
-            }
-
-            // FLEXSPIA_SCLK
-            IOMUXC->SW_MUX_CTL_PAD[SW_MUX_CTL_PAD_FLEXSPIA_SCLK_IDX] = FLEXSPIA_MUX_VAL | IOMUXC_SW_MUX_CTL_PAD_SION(1);
-            IOMUXC->SW_PAD_CTL_PAD[SW_PAD_CTL_PAD_FLEXSPIA_SCLK_IDX] = sclkPadCtlValue;
-
-            // FLEXSPIA_DATA0
-            IOMUXC->SW_MUX_CTL_PAD[SW_MUX_CTL_PAD_FLEXSPIA_DATA0_IDX] = FLEXSPIA_MUX_VAL;
-            IOMUXC->SW_PAD_CTL_PAD[SW_PAD_CTL_PAD_FLEXSPIA_DATA0_IDX] = dataPadCtlValue;
-
-            // FLEXSPIA_DATA1
-            IOMUXC->SW_MUX_CTL_PAD[SW_MUX_CTL_PAD_FLEXSPIA_DATA1_IDX] = FLEXSPIA_MUX_VAL;
-            IOMUXC->SW_PAD_CTL_PAD[SW_PAD_CTL_PAD_FLEXSPIA_DATA1_IDX] = dataPadCtlValue;
-
-            // FLEXSPIA_DATA2
-            IOMUXC->SW_MUX_CTL_PAD[SW_MUX_CTL_PAD_FLEXSPIA_DATA2_IDX] = FLEXSPIA_MUX_VAL;
-            IOMUXC->SW_PAD_CTL_PAD[SW_PAD_CTL_PAD_FLEXSPIA_DATA2_IDX] = dataPadCtlValue;
-
-            // FLEXSPIA_DATA3
-            IOMUXC->SW_MUX_CTL_PAD[SW_MUX_CTL_PAD_FLEXSPIA_DATA3_IDX] = FLEXSPIA_MUX_VAL;
-            IOMUXC->SW_PAD_CTL_PAD[SW_PAD_CTL_PAD_FLEXSPIA_DATA3_IDX] = dataPadCtlValue;
-
-
-            if (config->sflashPadType == kSerialFlash_8Pads)
-            {
-                // FLEXSPIA_DATA4 / FLEXSPIB_DATA0
-                IOMUXC->SW_MUX_CTL_PAD[SW_MUX_CTL_PAD_FLEXSPIB_DATA0_IDX] = FLEXSPIA_MUX_VAL;
-                IOMUXC->SW_PAD_CTL_PAD[SW_PAD_CTL_PAD_FLEXSPIB_DATA0_IDX] = dataPadCtlValue;
-
-                // FLEXSPIA_DATA5 / FLEXSPIB_DATA1
-                IOMUXC->SW_MUX_CTL_PAD[SW_MUX_CTL_PAD_FLEXSPIB_DATA1_IDX] = FLEXSPIA_MUX_VAL;
-                IOMUXC->SW_PAD_CTL_PAD[SW_PAD_CTL_PAD_FLEXSPIB_DATA1_IDX] = dataPadCtlValue;
-
-                // FLEXSPIA_DATA6 / FLEXSPIB_DATA2
-                IOMUXC->SW_MUX_CTL_PAD[SW_MUX_CTL_PAD_FLEXSPIB_DATA2_IDX] = FLEXSPIA_MUX_VAL;
-                IOMUXC->SW_PAD_CTL_PAD[SW_PAD_CTL_PAD_FLEXSPIB_DATA2_IDX] = dataPadCtlValue;
-
-                // FLEXSPIA_DATA7 / FLEXSPIB_DATA3
-                IOMUXC->SW_MUX_CTL_PAD[SW_MUX_CTL_PAD_FLEXSPIB_DATA3_IDX] = FLEXSPIA_MUX_VAL;
-                IOMUXC->SW_PAD_CTL_PAD[SW_PAD_CTL_PAD_FLEXSPIB_DATA3_IDX] = dataPadCtlValue;
-            }
-
-            // Configure DQS pad
-            if ((config->readSampleClkSrc == kFlexSPIReadSampleClk_ExternalInputFromDqsPad) ||
-                (config->readSampleClkSrc == kFlexSPIReadSampleClk_LoopbackFromDqsPad))
-            {
-                // FLEXSPIA_DQS
-                IOMUXC->SW_MUX_CTL_PAD[SW_MUX_CTL_PAD_FLEXSPIA_DQS_IDX] = FLEXSPIA_MUX_VAL | IOMUXC_SW_MUX_CTL_PAD_SION(1);
-                IOMUXC->SW_PAD_CTL_PAD[SW_PAD_CTL_PAD_FLEXSPIA_DQS_IDX] = dqsPadCtlValue;
-            }
-
-            // Configure Differential Clock pin
-            if (flexspi_is_differential_clock_enable(config))
-            {
-                IOMUXC->SW_MUX_CTL_PAD[SW_MUX_CTL_PAD_FLEXSPIA_SCLK_B_IDX] = FLEXSPIA_MUX_VAL;
-                IOMUXC->SW_PAD_CTL_PAD[SW_PAD_CTL_PAD_FLEXSPIA_SCLK_B_IDX] = sclkPadCtlValue;
-            }
-        }
-
-        // Pinmux configuration for FLEXSPI PortB
-        if (config->sflashB1Size || config->sflashB2Size)
-        {
-            if (config->sflashB2Size)
-            {
-                // FLEXSPIB_SS1_B
-                IOMUXC->SW_MUX_CTL_PAD[SW_MUX_CTL_PAD_FLEXSPIB_SS1_B_IDX] = FLEXSPIB_SS1_MUX_VAL;
-                IOMUXC->SW_PAD_CTL_PAD[SW_PAD_CTL_PAD_FLEXSPIB_SS1_B_IDX] = csPadCtlValue;
-            }
-
-            // Basic pinmux configuration for FLEXSPI
-            if (config->sflashB1Size)
-            {
-                // FLEXSPIB_SS0_B
-                IOMUXC->SW_MUX_CTL_PAD[SW_MUX_CTL_PAD_FLEXSPIB_SS0_B_IDX] = FLEXSPIB_SS0_MUX_VAL;
-                IOMUXC->SW_PAD_CTL_PAD[SW_PAD_CTL_PAD_FLEXSPIB_SS0_B_IDX] = csPadCtlValue;
-            }
-
-            // FLEXSPIB_SCLK
-            IOMUXC->SW_MUX_CTL_PAD[SW_MUX_CTL_PAD_FLEXSPIB_SCLK_IDX] = FLEXSPIB_MUX_VAL | IOMUXC_SW_MUX_CTL_PAD_SION(1);
-            IOMUXC->SW_PAD_CTL_PAD[SW_PAD_CTL_PAD_FLEXSPIB_SCLK_IDX] = sclkPadCtlValue;
-
-            // FLEXSPIB_DATA0
-            IOMUXC->SW_MUX_CTL_PAD[SW_MUX_CTL_PAD_FLEXSPIB_DATA0_IDX] = FLEXSPIB_MUX_VAL;
-            IOMUXC->SW_PAD_CTL_PAD[SW_PAD_CTL_PAD_FLEXSPIB_DATA0_IDX] = dataPadCtlValue;
-
-            // FLEXSPIB_DATA1
-            IOMUXC->SW_MUX_CTL_PAD[SW_MUX_CTL_PAD_FLEXSPIB_DATA1_IDX] = FLEXSPIB_MUX_VAL;
-            IOMUXC->SW_PAD_CTL_PAD[SW_PAD_CTL_PAD_FLEXSPIB_DATA1_IDX] = dataPadCtlValue;
-
-            // FLEXSPIB_DATA2
-            IOMUXC->SW_MUX_CTL_PAD[SW_MUX_CTL_PAD_FLEXSPIB_DATA2_IDX] = FLEXSPIB_MUX_VAL;
-            IOMUXC->SW_PAD_CTL_PAD[SW_PAD_CTL_PAD_FLEXSPIB_DATA2_IDX] = dataPadCtlValue;
-
-            // FLEXSPIB_DATA3
-            IOMUXC->SW_MUX_CTL_PAD[SW_MUX_CTL_PAD_FLEXSPIB_DATA3_IDX] = FLEXSPIB_MUX_VAL;
-            IOMUXC->SW_PAD_CTL_PAD[SW_PAD_CTL_PAD_FLEXSPIB_DATA3_IDX] = dataPadCtlValue;
-
-            // Configure DQS pad
-            if ((config->readSampleClkSrc == kFlexSPIReadSampleClk_ExternalInputFromDqsPad) ||
-                (config->readSampleClkSrc == kFlexSPIReadSampleClk_LoopbackFromDqsPad))
-            {
-                // FLEXSPIB_DQS
-                IOMUXC->SW_MUX_CTL_PAD[SW_MUX_CTL_PAD_FLEXSPIB_DQS_IDX] = FLEXSPIB_DQS_MUX_VAL | IOMUXC_SW_MUX_CTL_PAD_SION(1);
-                IOMUXC->SW_PAD_CTL_PAD[SW_PAD_CTL_PAD_FLEXSPIB_DQS_IDX] = dqsPadCtlValue;
-            }
-        }
-    }
-}
-
-#if BL_FEATURE_FLEXSPI_NOR_MODULE || BL_FEATURE_SPINAND_MODULE
-//!@brief Configure clock for FlexSPI peripheral
-void flexspi_clock_config(uint32_t instance, uint32_t freq, uint32_t sampleClkMode)
-{
-    uint32_t pfd480 = 0;
-    uint32_t cscmr1 = 0;
-    uint32_t frac = 0;
-    uint32_t podf = 0;
-
-    typedef struct _flexspi_clock_param
-    {
-        uint8_t frac;
-        uint8_t podf;
-    } flexspi_clock_param_t;
-
-    const flexspi_clock_param_t k_sdr_clock_config[kFlexSpiSerialClk_200MHz + 1] = {
-        // Reserved, 30MHz     50MHz     60MHz        75MHz    80MHz       100MHz   133MHz       166MHz   200MHz
-        { 0, 0 }, { 34, 8 }, { 22, 8 }, { 24, 6 }, { 30, 4 }, { 18, 6 }, { 14, 6 }, { 17, 4 }, { 26, 2 }, { 22, 2 }
-    };
-    const flexspi_clock_param_t k_ddr_clock_config[kFlexSpiSerialClk_200MHz + 1] = {
-        // Reserved, 30MHz,  50MHz,       60MHz,      75MHz,   80Mhz,   100MHz,      133MHz,   166MHz,     200MHz
-        { 0, 0 }, { 24, 6 }, { 22, 4 }, { 12, 6 }, { 30, 2 }, { 18, 3 }, { 22, 2 }, { 33, 1 }, { 26, 1 }, { 22, 1 }
-    };
-
-    do
-    {
-        if ((sampleClkMode != kFlexSpiClk_SDR) && (sampleClkMode != kFlexSpiClk_DDR))
-        {
-            break;
-        }
-
-        pfd480 = CCM_ANALOG->PFD_480 & (~CCM_ANALOG_PFD_480_PFD0_FRAC_MASK);
-        cscmr1 = CCM->CSCMR1 & (~CCM_CSCMR1_FLEXSPI_PODF_MASK);
-
-        // Note: Per ANALOG IP Owner's recommendation, FRAC should be even number,
-        //       PODF should be even nubmer as well if the divider is greater than 1
-
-        const flexspi_clock_param_t *flexspi_config_array = NULL;
-        if (sampleClkMode == kFlexSpiClk_SDR)
-        {
-            flexspi_config_array = &k_sdr_clock_config[0];
-        }
-        else
-        {
-            flexspi_config_array = &k_ddr_clock_config[0];
-        }
-
-        if (freq >= kFlexSpiSerialClk_30MHz)
-        {
-            if (freq > kFlexSpiSerialClk_200MHz)
-            {
-                freq = kFlexSpiSerialClk_30MHz;
-            }
-
-            frac = flexspi_config_array[freq].frac;
-            podf = flexspi_config_array[freq].podf;
-
-            pfd480 |= CCM_ANALOG_PFD_480_PFD0_FRAC(frac);
-            cscmr1 |= CCM_CSCMR1_FLEXSPI_PODF(podf - 1);
-
-            FLEXSPI->MCR0 |= FLEXSPI_MCR0_MDIS_MASK;
-            flexspi_clock_gate_disable(instance);
-
-            if (pfd480 != CCM_ANALOG->PFD_480)
-            {
-                CCM_ANALOG->PFD_480 = pfd480;
-            }
-            if (cscmr1 != CCM->CSCMR1)
-            {
-                CCM->CSCMR1 = cscmr1;
-            }
-            flexspi_clock_gate_enable(instance);
-            FLEXSPI->MCR0 &= ~FLEXSPI_MCR0_MDIS_MASK;
-        }
-        else
-        {
-            // Do nothing
-        }
-    } while (0);
-}
-#endif // #if BL_FEATURE_FLEXSPI_NOR_MODULE || BL_FEATURE_SPINAND_MODULE
 
 bool flexspi_is_padsetting_override_enable(flexspi_mem_config_t *config)
 {
@@ -1293,7 +988,6 @@ status_t flexspi_init(uint32_t instance, flexspi_mem_config_t *config)
     return status;
 }
 
-#if (!defined(BL_FEATURE_HAS_FLEXSPI_NOR_ROMAPI)) || (BL_FEATURE_HAS_FLEXSPI_NOR_ROMAPI == 0)
 status_t flexspi_update_lut(uint32_t instance, uint32_t seqIndex, const uint32_t *lutBase, uint32_t seqNumber)
 {
     status_t status = kStatus_InvalidArgument;
@@ -1334,9 +1028,7 @@ status_t flexspi_update_lut(uint32_t instance, uint32_t seqIndex, const uint32_t
 
     return status;
 }
-#endif // #if (!defined (BL_FEATURE_HAS_FLEXSPI_NOR_ROMAPI)) || (BL_FEATURE_HAS_FLEXSPI_NOR_ROMAPI == 0)
 
-#if (!BL_FEATURE_HAS_FLEXSPI_NOR_ROMAPI) || (!ROM_API_HAS_FLEXSPI_XFER)
 status_t flexspi_command_xfer(uint32_t instance, flexspi_xfer_t *xfer)
 {
     status_t status = kStatus_InvalidArgument;
@@ -1542,7 +1234,6 @@ status_t flexspi_command_xfer(uint32_t instance, flexspi_xfer_t *xfer)
 
     return status;
 }
-#endif // #if (!BL_FEATURE_HAS_FLEXSPI_NOR_ROMAPI) || (!ROM_API_HAS_FLEXSPI_XFER)
 
 void flexspi_wait_idle(uint32_t instance)
 {
@@ -1562,7 +1253,6 @@ void flexspi_wait_idle(uint32_t instance)
     } while (0);
 }
 
-#if (!BL_FEATURE_HAS_FLEXSPI_NOR_ROMAPI) || (!ROM_API_HAS_FLEXSPI_CLEAR_CACHE)
 void flexspi_clear_cache(uint32_t instance)
 {
     do
@@ -1577,9 +1267,7 @@ void flexspi_clear_cache(uint32_t instance)
 
     } while (0);
 }
-#endif // #if (!BL_FEATURE_HAS_FLEXSPI_NOR_ROMAPI) || (!ROM_API_HAS_FLEXSPI_CLEAR_CACHE)
 
-#if FLEXSPI_FEATURE_HAS_PARALLEL_MODE
 static status_t flexspi_extract_parallel_data(uint32_t *dst0, uint32_t *dst1, uint32_t *src, uint32_t length)
 {
     status_t status = kStatus_InvalidArgument;
@@ -1606,7 +1294,6 @@ static status_t flexspi_extract_parallel_data(uint32_t *dst0, uint32_t *dst1, ui
 
     return status;
 }
-#endif // FLEXSPI_FEATURE_HAS_PARALLEL_MODE
 
 status_t flexspi_device_wait_busy(uint32_t instance,
                                   flexspi_mem_config_t *config,
@@ -1758,88 +1445,4 @@ void flexspi_half_clock_control(uint32_t instance, uint32_t option)
         }
 
     } while (0);
-}
-
-#if BL_FEATURE_FLEXSPI_NOR_MODULE || BL_FEATURE_SPINAND_MODULE
-// Set failsafe settings
-status_t flexspi_set_failsafe_setting(flexspi_mem_config_t *config)
-{
-    status_t status = kStatus_InvalidArgument;
-    do
-    {
-        if (config == NULL)
-        {
-            break;
-        }
-// This is an example that shows how to override the default pad setting in ROM, for now, the pad setting in ROM is
-// idential to below values
-// So, below codes are not required.
-#if 0
-        // See IOMUXC pad setting definitions for more details.
-        config->controllerMiscOption |= (1<<kFlexSpiMiscOffset_PadSettingOverrideEnable);
-        config->dqsPadSettingOverride = 0x130f1;
-        config->sclkPadSettingOverride = 0x10f1;
-        config->csPadSettingOverride = 0x10f1;
-        config->dataPadSettingOverride = 0x10f1;
-#endif
-        if (config->readSampleClkSrc == kFlexSPIReadSampleClk_ExternalInputFromDqsPad)
-        {
-            if (config->controllerMiscOption & (1 << kFlexSpiMiscOffset_DdrModeEnable))
-            {
-                config->dataValidTime[0].time_100ps = 15; // 1.5 ns // 1/4 * cycle of 166MHz DDR
-            }
-            else
-            {
-                if (config->dataValidTime[0].delay_cells < 1)
-                {
-                    config->dataValidTime[0].time_100ps = 30; // 3 ns // 1/2 * cycle of 166MHz DDR
-                }
-            }
-        }
-        status = kStatus_Success;
-
-    } while (0);
-
-    return status;
-}
-
-// Get max supported Frequency in this SoC
-status_t flexspi_get_max_supported_freq(uint32_t instance, uint32_t *freq, uint32_t clkMode)
-{
-    status_t status = kStatus_InvalidArgument;
-    do
-    {
-        if ((instance != 0) || (freq == NULL))
-        {
-            break;
-        }
-
-        if (kFlexSpiClk_DDR == clkMode)
-        {
-            *freq = (166UL * 1000 * 1000);
-        }
-        else
-        {
-            *freq = (166UL * 1000 * 1000);
-        }
-
-        status = kStatus_Success;
-
-    } while (0);
-
-    return status;
-}
-#endif // #if BL_FEATURE_FLEXSPI_NOR_MODULE || BL_FEATURE_SPINAND_MODULE
-
-void flexspi_sw_delay_us(uint64_t us)
-{
-    uint32_t ticks_per_us = get_core_clock() / 1000000;
-    while(us--)
-    {
-        volatile uint32_t ticks = ticks_per_us / 4;
-        while(ticks--)
-        {
-            __NOP();
-        }
-    }
 }

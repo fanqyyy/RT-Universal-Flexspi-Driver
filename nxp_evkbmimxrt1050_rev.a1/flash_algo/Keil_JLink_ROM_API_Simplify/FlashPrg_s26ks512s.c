@@ -9,7 +9,7 @@
 /***********************************************************************/
 
 #include "FlashOS.H" // FlashOS Structures
-#include "bl_api.h"
+#include "flexspi_nor_flash.h"
 
 #define FLEXSPI_NOR_INSTANCE 0
 #define SECTOR_SIZE (262144)

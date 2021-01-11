@@ -10,7 +10,7 @@
 #ifndef __FSL_FLEXSPI_H__
 #define __FSL_FLEXSPI_H__
 
-#include "fsl_common.h"
+#include "bl_common.h"
 
 /**********************************************************************************************************************
  * Definitions
@@ -375,6 +375,8 @@ extern "C"
     status_t flexspi_get_max_supported_freq(uint32_t instance, uint32_t *freq, uint32_t clkMode);
 
     void flexspi_sw_delay_us(uint64_t us);
+
+    void flexspi_update_padsetting(flexspi_mem_config_t *config, uint32_t driveStrength);
 
 #ifdef __cplusplus
 }
