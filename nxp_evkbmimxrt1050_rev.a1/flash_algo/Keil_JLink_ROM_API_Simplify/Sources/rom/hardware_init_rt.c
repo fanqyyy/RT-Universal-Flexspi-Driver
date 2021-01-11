@@ -874,8 +874,9 @@ status_t flexspi_get_clock(uint32_t instance, flexspi_clock_type_t type, uint32_
         status = kStatus_InvalidArgument;
         break;
     }
-#endif
     *freq = clockFrequency;
 
     return status;
 }
+
+#endif
