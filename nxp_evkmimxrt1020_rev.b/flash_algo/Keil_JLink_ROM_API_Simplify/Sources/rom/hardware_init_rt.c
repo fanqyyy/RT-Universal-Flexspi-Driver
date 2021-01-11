@@ -661,6 +661,65 @@ uint32_t CLOCK_GetCPUFreq_RT1020(void)
     return freq;
 }
 
+uint32_t get_arm_pll(void)
+{
+    uint32_t arm_pll = 0;
+    uint32_t frac = 0;
+    uint32_t arm_podf = 0;
+    uint32_t clock_source = 0;
+    uint32_t periph_clk2_podf = 0;
+
+    if (CCM->CBCDR & CCM_CBCDR_PERIPH_CLK_SEL_MASK) // Derive clock from periph_clk2_sel
+    {
+        clock_source = (CCM->CBCMR & CCM_CBCMR_PERIPH_CLK2_SEL_MASK) >> CCM_CBCMR_PERIPH_CLK2_SEL_SHIFT;
+        if (clock_source == 0)
+        {
+            arm_pll = FREQ_480MHz;
+        }
+        else
+        {
+            arm_pll = FREQ_24MHz;
+        }
+
+        periph_clk2_podf = 1 + ((CCM->CBCDR & CCM_CBCDR_PERIPH_CLK2_PODF_MASK) >> CCM_CBCDR_PERIPH_CLK2_PODF_SHIFT);
+
+        arm_pll /= periph_clk2_podf;
+    }
+    else // Derive clock from pre_periph_clk_sel
+    {
+        clock_source = (CCM->CBCMR & CCM_CBCMR_PRE_PERIPH_CLK_SEL_MASK) >> CCM_CBCMR_PRE_PERIPH_CLK_SEL_SHIFT;
+
+        switch(clock_source)
+        {
+        case 2: // PFD_528_PFD3
+            frac = (CCM_ANALOG->PFD_528 & CCM_ANALOG_PFD_528_PFD3_FRAC_MASK) >> CCM_ANALOG_PFD_528_PFD3_FRAC_SHIFT;
+            arm_pll = FREQ_528MHz / frac * 18;
+            break;
+        case 0: // SYS_PLL
+            arm_pll = FREQ_528MHz;
+            break;
+        case 1: // PFD_528_PFD2
+            frac = (CCM_ANALOG->PFD_528 & CCM_ANALOG_PFD_528_PFD2_FRAC_MASK) >> CCM_ANALOG_PFD_528_PFD2_FRAC_SHIFT;
+            arm_pll = FREQ_528MHz / frac * 18;
+            break;
+        default: // ENET PLL / ARM_PODF
+            if (CCM_ANALOG->PLL_ENET & CCM_ANALOG_PLL_ENET_BYPASS_MASK)
+            {
+                arm_pll = FREQ_24MHz;
+            }
+            else
+            {
+                arm_pll = FREQ_500MHz;
+            }
+            arm_podf = 1 + ((CCM->CACRR & CCM_CACRR_ARM_PODF_MASK) >> CCM_CACRR_ARM_PODF_SHIFT);
+            arm_pll /= arm_podf;
+            break;
+        }
+    }
+
+    return arm_pll;
+}
+
 void flexspi_sw_delay_us(uint64_t us)
 {
     uint32_t ticks_per_us = CLOCK_GetCPUFreq_RT1020() / 1000000;
@@ -672,6 +731,56 @@ void flexspi_sw_delay_us(uint64_t us)
             __NOP();
         }
     }
+}
+
+//!@brief Get Clock for FlexSPI peripheral
+status_t flexspi_get_clock(uint32_t instance, flexspi_clock_type_t type, uint32_t *freq)
+{
+    uint32_t clockFrequency = 0;
+    status_t status = kStatus_Success;
+
+    uint32_t ahbBusDivider;
+    uint32_t seralRootClkDivider;
+	
+    switch (type)
+    {
+        case kFlexSpiClock_CoreClock:
+            clockFrequency = CLOCK_GetCPUFreq_RT1020();
+            break;
+    case kFlexSpiClock_AhbClock:
+        {
+            uint32_t arm_pll = get_arm_pll();
+            uint32_t ahb_podf = 1 + ((CCM->CBCDR & CCM_CBCDR_AHB_PODF_MASK) >> CCM_CBCDR_AHB_PODF_SHIFT);
+            // Note: In I.MXRT_1020, actual AHB clock is IPG_CLOCK_ROOT
+            ahbBusDivider = ((CCM->CBCDR & CCM_CBCDR_IPG_PODF_MASK)>>CCM_CBCDR_IPG_PODF_SHIFT) + 1;
+            clockFrequency = arm_pll / ahb_podf / ahbBusDivider;
+        }
+        break;
+        case kFlexSpiClock_SerialRootClock:
+        {
+            uint32_t pfdFrac;
+            uint32_t pfdClk;
+
+            // FLEXPI CLK SEL
+            uint32_t flexspi_clk_src =
+                (CCM->CSCMR1 & CCM_CSCMR1_FLEXSPI_CLK_SEL_MASK) >> CCM_CSCMR1_FLEXSPI_CLK_SEL_SHIFT;
+
+            // PLL_480_PFD0
+            pfdFrac = (CCM_ANALOG->PFD_480 & CCM_ANALOG_PFD_480_PFD0_FRAC_MASK) >> CCM_ANALOG_PFD_480_PFD0_FRAC_SHIFT;
+            pfdClk = FREQ_480MHz / pfdFrac * 18;
+
+            seralRootClkDivider = ((CCM->CSCMR1 & CCM_CSCMR1_FLEXSPI_PODF_MASK) >> CCM_CSCMR1_FLEXSPI_PODF_SHIFT) + 1;
+
+            clockFrequency = pfdClk / seralRootClkDivider;
+        }
+        break;
+        default:
+            status = kStatus_InvalidArgument;
+            break;
+    }
+    *freq = clockFrequency;
+
+    return status;
 }
 
 #endif

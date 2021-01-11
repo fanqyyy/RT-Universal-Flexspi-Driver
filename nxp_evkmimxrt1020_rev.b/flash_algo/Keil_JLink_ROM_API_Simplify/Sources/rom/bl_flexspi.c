@@ -107,66 +107,16 @@ bool flexspi_is_parallel_mode(flexspi_mem_config_t *config)
     }
 }
 
-status_t flexspi_get_clock(uint32_t instance, flexspi_clock_type_t type, uint32_t *freq)
-{
-    uint32_t clockFrequency = 0;
-    status_t status = kStatus_Success;
-
-    uint32_t ahbBusDivider;
-    uint32_t seralRootClkDivider;
-    uint32_t arm_clock = SystemCoreClock;
-
-    switch (type)
-    {
-        case kFlexSpiClock_CoreClock:
-            clockFrequency = SystemCoreClock;
-            break;
-        case kFlexSpiClock_AhbClock:
-        {
-            // Note: In I.MXRT1020, actual AHB clock is IPG_CLOCK_ROOT
-            ahbBusDivider = ((CCM->CBCDR & CCM_CBCDR_IPG_PODF_MASK) >> CCM_CBCDR_IPG_PODF_SHIFT) + 1;
-            clockFrequency = arm_clock / ahbBusDivider;
-        }
-        break;
-        case kFlexSpiClock_SerialRootClock:
-        {
-            uint32_t pfdFrac;
-            uint32_t pfdClk;
-
-            // FLEXPI CLK SEL
-            uint32_t flexspi_clk_src =
-                (CCM->CSCMR1 & CCM_CSCMR1_FLEXSPI_CLK_SEL_MASK) >> CCM_CSCMR1_FLEXSPI_CLK_SEL_SHIFT;
-
-            // PLL_480_PFD0
-            pfdFrac = (CCM_ANALOG->PFD_480 & CCM_ANALOG_PFD_480_PFD0_FRAC_MASK) >> CCM_ANALOG_PFD_480_PFD0_FRAC_SHIFT;
-            pfdClk = FREQ_480MHz / pfdFrac * 18;
-
-            seralRootClkDivider = ((CCM->CSCMR1 & CCM_CSCMR1_FLEXSPI_PODF_MASK) >> CCM_CSCMR1_FLEXSPI_PODF_SHIFT) + 1;
-
-            clockFrequency = pfdClk / seralRootClkDivider;
-        }
-        break;
-        default:
-            status = kStatus_InvalidArgument;
-            break;
-    }
-    *freq = clockFrequency;
-
-    return status;
-}
-
 //!@brief Gate on the clock for the FlexSPI peripheral
 void flexspi_clock_gate_enable(uint32_t instance)
 {
     CCM->CCGR6 |= CCM_CCGR6_CG5_MASK;
-    __ISB();
 }
 
 //!@brief Gate off the clock the FlexSPI peripheral
 void flexspi_clock_gate_disable(uint32_t instance)
 {
     CCM->CCGR6 &= (uint32_t)~CCM_CCGR6_CG5_MASK;
-    __ISB();
 }
 
 bool flexspi_is_padsetting_override_enable(flexspi_mem_config_t *config)
@@ -1254,7 +1204,6 @@ void flexspi_wait_idle(uint32_t instance)
     } while (0);
 }
 
-#if (!BL_FEATURE_HAS_FLEXSPI_NOR_ROMAPI) || (!ROM_API_HAS_FLEXSPI_CLEAR_CACHE)
 void flexspi_clear_cache(uint32_t instance)
 {
     do
@@ -1269,9 +1218,7 @@ void flexspi_clear_cache(uint32_t instance)
 
     } while (0);
 }
-#endif // #if (!BL_FEATURE_HAS_FLEXSPI_NOR_ROMAPI) || (!ROM_API_HAS_FLEXSPI_CLEAR_CACHE)
 
-#if FLEXSPI_FEATURE_HAS_PARALLEL_MODE
 static status_t flexspi_extract_parallel_data(uint32_t *dst0, uint32_t *dst1, uint32_t *src, uint32_t length)
 {
     status_t status = kStatus_InvalidArgument;
@@ -1298,7 +1245,6 @@ static status_t flexspi_extract_parallel_data(uint32_t *dst0, uint32_t *dst1, ui
 
     return status;
 }
-#endif // FLEXSPI_FEATURE_HAS_PARALLEL_MODE
 
 status_t flexspi_device_wait_busy(uint32_t instance,
                                   flexspi_mem_config_t *config,

@@ -531,7 +531,7 @@ status_t flexspi_nor_write_enable(uint32_t instance,
         {
             break;
         }
-#if FLEXSPI_ENABLE_NO_CMD_MODE_SUPPORT
+
         if (config->needExitNoCmdMode)
         {
             // Issue exit no command sequence before sending write enable command, in case device is under
@@ -542,25 +542,21 @@ status_t flexspi_nor_write_enable(uint32_t instance,
                 break;
             }
         }
-#endif
 
-#if FLEXSPI_ENABLE_OCTAL_FLASH_SUPPORT
         if (config->serialNorType == kSerialNorType_XPI)
         {
             memcpy(lut_tmp, &config->memConfig.lookupTable[4 * NOR_CMD_LUT_SEQ_IDX_WRITEENABLE], 16);
             memcpy(&config->memConfig.lookupTable[4 * NOR_CMD_LUT_SEQ_IDX_WRITEENABLE],
                    &config->memConfig.lookupTable[4 * NOR_CMD_LUT_SEQ_IDX_WRITEENABLE_XPI], 16);
         }
-#endif
 
         status = flexspi_device_write_enable(instance, &config->memConfig, isParallelMode, baseAddr);
-#if FLEXSPI_ENABLE_OCTAL_FLASH_SUPPORT
+
         // Restore LUT
         if (config->serialNorType == kSerialNorType_XPI)
         {
             memcpy(&config->memConfig.lookupTable[4 * NOR_CMD_LUT_SEQ_IDX_WRITEENABLE], lut_tmp, 16);
         }
-#endif
         if (status != kStatus_Success)
         {
             break;
@@ -582,14 +578,14 @@ status_t flexspi_nor_wait_busy(uint32_t instance, flexspi_nor_config_t *config, 
         {
             break;
         }
-#if FLEXSPI_ENABLE_OCTAL_FLASH_SUPPORT
+
         if (config->serialNorType == kSerialNorType_XPI)
         {
             memcpy(lut_tmp, &config->memConfig.lookupTable[4 * NOR_CMD_LUT_SEQ_IDX_READSTATUS], 16);
             memcpy(&config->memConfig.lookupTable[4 * NOR_CMD_LUT_SEQ_IDX_READSTATUS],
                    &config->memConfig.lookupTable[4 * NOR_CMD_LUT_SEQ_IDX_READSTATUS_XPI], 16);
         }
-#endif
+
         status = flexspi_device_wait_busy(instance, &config->memConfig, isParallMode, baseAddr);
         if (status != kStatus_Success)
         {
@@ -598,13 +594,11 @@ status_t flexspi_nor_wait_busy(uint32_t instance, flexspi_nor_config_t *config, 
 
     } while (0);
 
-#if FLEXSPI_ENABLE_OCTAL_FLASH_SUPPORT
     // Restore LUT
     if ((config != NULL) && (config->serialNorType == kSerialNorType_XPI))
     {
         memcpy(&config->memConfig.lookupTable[4 * NOR_CMD_LUT_SEQ_IDX_READSTATUS], lut_tmp, 16);
     }
-#endif
 
     return status;
 }
@@ -737,12 +731,10 @@ status_t flexspi_nor_flash_page_program(uint32_t instance,
             break;
         }
 
-#if FLEXSPI_ENABLE_NO_CMD_MODE_SUPPORT
         if (config->needRestoreNoCmdMode)
         {
             status = flexspi_nor_restore_no_cmd_mode(instance, config, isParallelMode, dstAddr);
         }
-#endif
 
     } while (0);
 
@@ -825,7 +817,7 @@ status_t flexspi_nor_flash_erase_all(uint32_t instance, flexspi_nor_config_t *co
                 {
                     break;
                 }
-#if FLEXSPI_ENABLE_NO_CMD_MODE_SUPPORT
+
                 if (config->needRestoreNoCmdMode)
                 {
                     status = flexspi_nor_restore_no_cmd_mode(instance, config, kSerialNOR_IndividualMode, baseAddr);
@@ -834,7 +826,6 @@ status_t flexspi_nor_flash_erase_all(uint32_t instance, flexspi_nor_config_t *co
                         break;
                     }
                 }
-#endif
             }
             baseAddr += currentFlashSize;
         }
@@ -896,7 +887,6 @@ status_t flexspi_nor_flash_erase_sector(uint32_t instance, flexspi_nor_config_t 
         {
             break;
         }
-#if FLEXSPI_ENABLE_NO_CMD_MODE_SUPPORT
         if (config->needRestoreNoCmdMode)
         {
             status = flexspi_nor_restore_no_cmd_mode(instance, config, isParallelMode, address);
@@ -905,7 +895,6 @@ status_t flexspi_nor_flash_erase_sector(uint32_t instance, flexspi_nor_config_t 
                 break;
             }
         }
-#endif
 
     } while (0);
 
@@ -964,7 +953,6 @@ status_t flexspi_nor_flash_erase_block(uint32_t instance, flexspi_nor_config_t *
         {
             break;
         }
-#if FLEXSPI_ENABLE_NO_CMD_MODE_SUPPORT
         if (config->needRestoreNoCmdMode)
         {
             status = flexspi_nor_restore_no_cmd_mode(instance, config, isParallelMode, address);
@@ -973,7 +961,6 @@ status_t flexspi_nor_flash_erase_block(uint32_t instance, flexspi_nor_config_t *
                 break;
             }
         }
-#endif
 
     } while (0);
 
@@ -1746,7 +1733,6 @@ status_t parse_sfdp(uint32_t instance,
             dummy_cycles += mode_cycles;
             mode_cycles = 0;
         }
-#if FLEXSPI_ENABLE_NO_CMD_MODE_SUPPORT
         else if (misc_mode == kSerialNorEnhanceMode_0_4_4_Mode)
         {
             // Cannot detect the 0-4-4 mode entry method, disable 0-4-4 mode
@@ -1806,7 +1792,6 @@ status_t parse_sfdp(uint32_t instance,
                 config->needExitNoCmdMode = true;
             }
         }
-#endif // FLEXSPI_ENABLE_NO_CMD_MODE_SUPPORT
         else if (misc_mode == kSerialNorEnhanceMode_InternalLoopback)
         {
             config->memConfig.readSampleClkSrc = kFlexSPIReadSampleClk_LoopbackInternally;
@@ -2037,7 +2022,7 @@ status_t flexspi_nor_generate_config_block_using_sfdp(uint32_t instance,
         {
             break;
         }
-#if FLEXSPI_ENABLE_NO_CMD_MODE_SUPPORT
+
         if (option->option0.B.misc_mode == kSerialNorEnhanceMode_0_4_4_Mode)
         {
             // Try to exit 0-4-4 mode
@@ -2054,7 +2039,6 @@ status_t flexspi_nor_generate_config_block_using_sfdp(uint32_t instance,
                 break;
             }
         }
-#endif // FLEXSPI_ENABLE_NO_CMD_MODE_SUPPORT
 
         // Read SFDP, probe whether the Flash device is present or not.
         jedec_info_table_t jedec_info_tbl;
@@ -3354,7 +3338,6 @@ status_t flexspi_nor_get_config(uint32_t instance, flexspi_nor_config_t *config,
             case kSerialNorCfgOption_DeviceType_ReadSFDP_DDR:
                 status = flexspi_nor_generate_config_block_using_sfdp(instance, config, option);
                 break;
-#if FLEXSPI_ENABLE_OCTAL_FLASH_SUPPORT
             case kSerialNorCfgOption_DeviceType_HyperFLASH1V8:
                 status = flexspi_nor_generate_config_block_hyperflash(instance, config, true);
                 break;
@@ -3373,7 +3356,6 @@ status_t flexspi_nor_get_config(uint32_t instance, flexspi_nor_config_t *config,
             case kSerialNorCfgOption_DeviceType_AdestoOctalSDR:
                 status = flexspi_nor_generate_config_block_adesto_octalflash(instance, config, option);
                 break;
-#endif // FLEXSPI_ENABLE_OCTAL_FLASH_SUPPORT
             default:
                 status = kStatus_InvalidArgument;
                 break;

@@ -12,6 +12,7 @@
 
 #include "bl_flexspi.h"
 #include "flexspi_nor_flash.h"
+
 ////////////////////////////////////////////////////////////////////////////////
 // Definitions
 ////////////////////////////////////////////////////////////////////////////////
@@ -1771,7 +1772,7 @@ status_t parse_sfdp(uint32_t instance,
         }
         else
         {
-            break;
+            // Do nothing
         }
 
         if (mode_cycles == 0)
@@ -1798,6 +1799,8 @@ status_t parse_sfdp(uint32_t instance,
         else
         {
             uint32_t mode_inst;
+#if 0 // Comment out this segment because in JESD216A/B, below logic cannot happen, keep the codes here in case it can
+      // be used for later JESD216 revision
             if (support_ddr_mode)
             {
                 if (mode_cycles == 1)
@@ -1815,6 +1818,7 @@ status_t parse_sfdp(uint32_t instance,
                     FLEXSPI_LUT_SEQ(READ_DDR, FLEXSPI_4PAD, 0x04, JMP_ON_CS, FLEXSPI_1PAD, 1);
             }
             else
+#endif
             {
                 if (mode_cycles == 1)
                 {

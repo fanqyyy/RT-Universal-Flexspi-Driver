@@ -321,7 +321,7 @@ extern "C"
     status_t flexspi_command_xfer(uint32_t instance, flexspi_xfer_t *xfer);
 
     //!@brief Get FlexSPI Clock frequency
-    extern status_t flexspi_get_clock(uint32_t instance, flexspi_clock_type_t type, uint32_t *freq);
+    status_t flexspi_get_clock(uint32_t instance, flexspi_clock_type_t type, uint32_t *freq);
 
     //!@brief Wait until FlexSPI controller becomes idle
     void flexspi_wait_idle(uint32_t instance);

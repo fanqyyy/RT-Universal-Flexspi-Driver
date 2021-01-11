@@ -119,6 +119,7 @@ void flexspi_clock_gate_disable(uint32_t instance)
     CCM->CCGR6 &= (uint32_t)~CCM_CCGR6_CG5_MASK;
 }
 
+
 bool flexspi_is_padsetting_override_enable(flexspi_mem_config_t *config)
 {
     if (config->controllerMiscOption & FLEXSPI_BITMASK(kFlexSpiMiscOffset_PadSettingOverrideEnable))
@@ -939,7 +940,6 @@ status_t flexspi_init(uint32_t instance, flexspi_mem_config_t *config)
     return status;
 }
 
-#if (!defined(BL_FEATURE_HAS_FLEXSPI_NOR_ROMAPI)) || (BL_FEATURE_HAS_FLEXSPI_NOR_ROMAPI == 0)
 status_t flexspi_update_lut(uint32_t instance, uint32_t seqIndex, const uint32_t *lutBase, uint32_t seqNumber)
 {
     status_t status = kStatus_InvalidArgument;
@@ -980,9 +980,7 @@ status_t flexspi_update_lut(uint32_t instance, uint32_t seqIndex, const uint32_t
 
     return status;
 }
-#endif // #if (!defined (BL_FEATURE_HAS_FLEXSPI_NOR_ROMAPI)) || (BL_FEATURE_HAS_FLEXSPI_NOR_ROMAPI == 0)
 
-#if (!BL_FEATURE_HAS_FLEXSPI_NOR_ROMAPI) || (!ROM_API_HAS_FLEXSPI_XFER)
 status_t flexspi_command_xfer(uint32_t instance, flexspi_xfer_t *xfer)
 {
     status_t status = kStatus_InvalidArgument;
@@ -1188,7 +1186,6 @@ status_t flexspi_command_xfer(uint32_t instance, flexspi_xfer_t *xfer)
 
     return status;
 }
-#endif // #if (!BL_FEATURE_HAS_FLEXSPI_NOR_ROMAPI) || (!ROM_API_HAS_FLEXSPI_XFER)
 
 void flexspi_wait_idle(uint32_t instance)
 {
@@ -1208,7 +1205,6 @@ void flexspi_wait_idle(uint32_t instance)
     } while (0);
 }
 
-#if (!BL_FEATURE_HAS_FLEXSPI_NOR_ROMAPI) || (!ROM_API_HAS_FLEXSPI_CLEAR_CACHE)
 void flexspi_clear_cache(uint32_t instance)
 {
     do
@@ -1223,9 +1219,7 @@ void flexspi_clear_cache(uint32_t instance)
 
     } while (0);
 }
-#endif // #if (!BL_FEATURE_HAS_FLEXSPI_NOR_ROMAPI) || (!ROM_API_HAS_FLEXSPI_CLEAR_CACHE)
 
-#if FLEXSPI_FEATURE_HAS_PARALLEL_MODE
 static status_t flexspi_extract_parallel_data(uint32_t *dst0, uint32_t *dst1, uint32_t *src, uint32_t length)
 {
     status_t status = kStatus_InvalidArgument;
@@ -1252,7 +1246,6 @@ static status_t flexspi_extract_parallel_data(uint32_t *dst0, uint32_t *dst1, ui
 
     return status;
 }
-#endif // FLEXSPI_FEATURE_HAS_PARALLEL_MODE
 
 status_t flexspi_device_wait_busy(uint32_t instance,
                                   flexspi_mem_config_t *config,

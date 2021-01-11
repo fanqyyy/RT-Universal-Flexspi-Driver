@@ -320,9 +320,6 @@ extern "C"
     //!@brief Perform FlexSPI command
     status_t flexspi_command_xfer(uint32_t instance, flexspi_xfer_t *xfer);
 
-	  //!@brief Get Core Clock
-		uint32_t get_core_clock(void);																	
-																			
     //!@brief Get FlexSPI Clock frequency
     status_t flexspi_get_clock(uint32_t instance, flexspi_clock_type_t type, uint32_t *freq);
 
@@ -378,6 +375,8 @@ extern "C"
     status_t flexspi_get_max_supported_freq(uint32_t instance, uint32_t *freq, uint32_t clkMode);
 
     void flexspi_sw_delay_us(uint64_t us);
+
+    void flexspi_update_padsetting(flexspi_mem_config_t *config, uint32_t driveStrength);
 
 #ifdef __cplusplus
 }

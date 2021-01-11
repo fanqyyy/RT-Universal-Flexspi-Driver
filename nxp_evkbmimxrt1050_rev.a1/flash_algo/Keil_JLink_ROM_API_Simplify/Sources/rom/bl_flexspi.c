@@ -11,6 +11,7 @@
 
 #include "bl_flexspi.h"
 #include "bl_common.h"
+
 /*******************************************************************************
  * Definitions
  ******************************************************************************/
@@ -117,7 +118,6 @@ void flexspi_clock_gate_disable(uint32_t instance)
 {
     CCM->CCGR6 &= (uint32_t)~CCM_CCGR6_CG5_MASK;
 }
-
 
 bool flexspi_is_padsetting_override_enable(flexspi_mem_config_t *config)
 {

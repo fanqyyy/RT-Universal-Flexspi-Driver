@@ -166,6 +166,11 @@ void flexspi_iomux_config_rt1010(uint32_t instance, flexspi_mem_config_t *config
     }
 }
 
+void flexspi_update_padsetting(flexspi_mem_config_t *config, uint32_t driveStrength)
+{
+
+}
+
 void flexspi_iomux_config(uint32_t instance, flexspi_mem_config_t *config)
 {
     flexspi_iomux_config_rt1010(instance, config);
