@@ -7,14 +7,15 @@
  *
  */
  
-#ifndef __HARDWARE_INIT_RT_H__
-#define __HARDWARE_INIT_RT_H__ 
+#ifndef __HARDWARE_INIT_RT1010_H__
+#define __HARDWARE_INIT_RT1010_H__ 
  
 #include <assert.h>
 #include <stdbool.h>
 
 #include "bl_flexspi.h"
 #include "bl_common.h"
+#include "hardware_init_rt1010.h"
 
 /*******************************************************************************
  * Definitions
@@ -166,19 +167,14 @@ void flexspi_iomux_config_rt1010(uint32_t instance, flexspi_mem_config_t *config
     }
 }
 
-void flexspi_update_padsetting(flexspi_mem_config_t *config, uint32_t driveStrength)
+void flexspi_update_padsetting_rt1010(flexspi_mem_config_t *config, uint32_t driveStrength)
 {
 
-}
-
-void flexspi_iomux_config(uint32_t instance, flexspi_mem_config_t *config)
-{
-    flexspi_iomux_config_rt1010(instance, config);
 }
 
 
 //!@brief Configure clock for FlexSPI peripheral
-void flexspi_clock_config(uint32_t instance, uint32_t freq, uint32_t sampleClkMode)
+void flexspi_clock_config_rt1010(uint32_t instance, uint32_t freq, uint32_t sampleClkMode)
 {
     uint32_t pfd480 = 0;
     uint32_t cscmr1 = 0;
@@ -258,7 +254,7 @@ void flexspi_clock_config(uint32_t instance, uint32_t freq, uint32_t sampleClkMo
 }
 
 // Set failsafe settings
-status_t flexspi_set_failsafe_setting(flexspi_mem_config_t *config)
+status_t flexspi_set_failsafe_setting_rt1010(flexspi_mem_config_t *config)
 {
     status_t status = kStatus_InvalidArgument;
     do
@@ -267,17 +263,7 @@ status_t flexspi_set_failsafe_setting(flexspi_mem_config_t *config)
         {
             break;
         }
-// This is an example that shows how to override the default pad setting in ROM, for now, the pad setting in ROM is
-// idential to below values
-// So, below codes are not required.
-#if 0
-        // See IOMUXC pad setting definitions for more details.
-        config->controllerMiscOption |= (1<<kFlexSpiMiscOffset_PadSettingOverrideEnable);
-        config->dqsPadSettingOverride = 0x130f1;
-        config->sclkPadSettingOverride = 0x10f1;
-        config->csPadSettingOverride = 0x10f1;
-        config->dataPadSettingOverride = 0x10f1;
-#endif
+				
         if (config->readSampleClkSrc == kFlexSPIReadSampleClk_ExternalInputFromDqsPad)
         {
             if (config->controllerMiscOption & (1 << kFlexSpiMiscOffset_DdrModeEnable))
@@ -300,7 +286,7 @@ status_t flexspi_set_failsafe_setting(flexspi_mem_config_t *config)
 }
 
 //!@brief Get maximum frequency supported by FlexSPI
-status_t flexspi_get_max_supported_freq(uint32_t instance, uint32_t *freq, uint32_t clkMode)
+status_t flexspi_get_max_supported_freq_rt1010(uint32_t instance, uint32_t *freq, uint32_t clkMode)
 {
     status_t status = kStatus_InvalidArgument;
     do
@@ -581,21 +567,8 @@ uint32_t CLOCK_GetCPUFreq_RT1010(void)
 		return freq;
 }
 
-void flexspi_sw_delay_us(uint64_t us)
-{
-    uint32_t ticks_per_us = CLOCK_GetCPUFreq_RT1010() / 1000000;
-    while (us--)
-    {
-        register uint32_t ticks = 1 + ticks_per_us / 4;
-        while (--ticks)
-        {
-            __NOP();
-        }
-    }
-}
-
 //!@brief Get Clock for FlexSPI peripheral
-status_t flexspi_get_clock(uint32_t instance, flexspi_clock_type_t type, uint32_t *freq)
+status_t flexspi_get_clock_rt1010(uint32_t instance, flexspi_clock_type_t type, uint32_t *freq)
 {
     uint32_t clockFrequency = 0;
     status_t status = kStatus_Success;
