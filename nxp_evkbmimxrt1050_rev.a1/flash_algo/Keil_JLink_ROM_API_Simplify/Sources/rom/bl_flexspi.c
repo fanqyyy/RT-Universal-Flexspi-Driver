@@ -106,55 +106,6 @@ bool flexspi_is_parallel_mode(flexspi_mem_config_t *config)
     }
 }
 
-//!@brief Get Clock for FlexSPI peripheral
-status_t flexspi_get_clock(uint32_t instance, flexspi_clock_type_t type, uint32_t *freq)
-{
-    uint32_t clockFrequency = 0;
-    status_t status = kStatus_Success;
-
-    uint32_t ahbBusDivider;
-    uint32_t seralRootClkDivider;
-    uint32_t arm_clock = SystemCoreClock;
-
-    switch (type)
-    {
-        case kFlexSpiClock_CoreClock:
-            clockFrequency = SystemCoreClock;
-            break;
-        case kFlexSpiClock_AhbClock:
-        {
-            // Note: In I.MXRT_512, actual AHB clock is IPG_CLOCK_ROOT
-            ahbBusDivider = ((CCM->CBCDR & CCM_CBCDR_IPG_PODF_MASK) >> CCM_CBCDR_IPG_PODF_SHIFT) + 1;
-            clockFrequency = arm_clock / ahbBusDivider;
-        }
-        break;
-        case kFlexSpiClock_SerialRootClock:
-        {
-            uint32_t pfdFrac;
-            uint32_t pfdClk;
-
-            // FLEXPI CLK SEL
-            uint32_t flexspi_clk_src =
-                (CCM->CSCMR1 & CCM_CSCMR1_FLEXSPI_CLK_SEL_MASK) >> CCM_CSCMR1_FLEXSPI_CLK_SEL_SHIFT;
-
-            // PLL_480_PFD0
-            pfdFrac = (CCM_ANALOG->PFD_480 & CCM_ANALOG_PFD_480_PFD0_FRAC_MASK) >> CCM_ANALOG_PFD_480_PFD0_FRAC_SHIFT;
-            pfdClk = FREQ_480MHz / pfdFrac * 18;
-
-            seralRootClkDivider = ((CCM->CSCMR1 & CCM_CSCMR1_FLEXSPI_PODF_MASK) >> CCM_CSCMR1_FLEXSPI_PODF_SHIFT) + 1;
-
-            clockFrequency = pfdClk / seralRootClkDivider;
-        }
-        break;
-        default:
-            status = kStatus_InvalidArgument;
-            break;
-    }
-    *freq = clockFrequency;
-
-    return status;
-}
-
 //!@brief Gate on the clock for the FlexSPI peripheral
 void flexspi_clock_gate_enable(uint32_t instance)
 {

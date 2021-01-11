@@ -760,5 +760,122 @@ void flexspi_sw_delay_us(uint64_t us)
     }
 }
 
-#endif
+uint32_t get_arm_pll(void)
+{
 
+    uint32_t arm_pll;
+    uint32_t arm_podf;
+    if (CCM_ANALOG->PLL_ARM & CCM_ANALOG_PLL_ARM_BYPASS_MASK)
+    {
+        arm_pll = FREQ_24MHz;
+    }
+    else
+    {
+        uint32_t div_select = (CCM_ANALOG->PLL_ARM & CCM_ANALOG_PLL_ARM_DIV_SELECT_MASK) >> CCM_ANALOG_PLL_ARM_DIV_SELECT_SHIFT;
+        arm_pll = FREQ_24MHz * div_select / 2;
+    }
+    arm_podf = 1 + ((CCM->CACRR & CCM_CACRR_ARM_PODF_MASK) >> CCM_CACRR_ARM_PODF_SHIFT);
+    arm_pll /= arm_podf;
+    return arm_pll;
+}
+
+//!@brief Get Clock for FlexSPI peripheral
+status_t flexspi_get_clock(uint32_t instance, flexspi_clock_type_t type, uint32_t *freq)
+{
+    uint32_t clockFrequency = 0;
+    status_t status = kStatus_Success;
+
+    uint32_t ahbBusDivider;
+    uint32_t seralRootClkDivider;
+
+    switch(type)
+    {
+    case kFlexSpiClock_CoreClock:
+        clockFrequency = CLOCK_GetCPUFreq_RT1050();
+        break;
+    case kFlexSpiClock_AhbClock:
+        {
+            uint32_t arm_pll = get_arm_pll();
+            uint32_t ahb_podf = 1 + ((CCM->CBCDR & CCM_CBCDR_AHB_PODF_MASK) >> CCM_CBCDR_AHB_PODF_SHIFT);
+            // Note: In I.MXRT_512, actual AHB clock is IPG_CLOCK_ROOT
+            ahbBusDivider = ((CCM->CBCDR & CCM_CBCDR_IPG_PODF_MASK)>>CCM_CBCDR_IPG_PODF_SHIFT) + 1;
+            clockFrequency = arm_pll / ahb_podf / ahbBusDivider;
+        }
+        break;
+    case kFlexSpiClock_SerialRootClock:
+        {
+            uint32_t pfdFrac;
+            uint32_t pfdClk;
+
+            // FLEXPI CLK SEL
+            uint32_t flexspi_clk_src = (CCM->CSCMR1 & CCM_CSCMR1_FLEXSPI_CLK_SEL_MASK) >> CCM_CSCMR1_FLEXSPI_CLK_SEL_SHIFT;
+
+            // PLL_480_PFD0
+            if (flexspi_clk_src == 3)
+
+            {
+                pfdFrac = (CCM_ANALOG->PFD_480 & CCM_ANALOG_PFD_480_PFD0_FRAC_MASK) >> CCM_ANALOG_PFD_480_PFD0_FRAC_SHIFT;
+                pfdClk = FREQ_480MHz / pfdFrac * 18;
+            }
+            // PLL_528_PFD2
+            else if (flexspi_clk_src == 2)
+            {
+                pfdFrac = (CCM_ANALOG->PFD_528 & CCM_ANALOG_PFD_528_PFD2_FRAC_MASK) >> CCM_ANALOG_PFD_528_PFD2_FRAC_SHIFT;
+                pfdClk = FREQ_528MHz / pfdFrac * 18;
+            }
+            // AXI clock
+            else if (flexspi_clk_src == 0)
+            {
+                uint32_t axi_clk_sel = (CCM->CBCDR & CCM_CBCDR_SEMC_CLK_SEL_MASK) >> CCM_CBCDR_SEMC_CLK_SEL_SHIFT;
+                // From pre_periph_clk_sel
+                if (axi_clk_sel == 0)
+                {
+                    pfdClk = get_arm_pll();
+                }
+                else
+                {
+                    uint32_t axi_alt_clk_sel = (CCM->CBCDR & CCM_CBCDR_SEMC_ALT_CLK_SEL_MASK) >> CCM_CBCDR_SEMC_ALT_CLK_SEL_SHIFT;
+                    // from PLL528_PFD2
+                    if (axi_alt_clk_sel == 0)
+                    {
+                        pfdFrac = (CCM_ANALOG->PFD_528 & CCM_ANALOG_PFD_528_PFD2_FRAC_MASK) >> CCM_ANALOG_PFD_528_PFD2_FRAC_SHIFT;
+                        pfdClk = FREQ_528MHz / pfdFrac * 18;
+                    }
+                    // from PLL480_PFD1
+                    else
+                    {
+                        pfdFrac = (CCM_ANALOG->PFD_480 & CCM_ANALOG_PFD_480_PFD1_FRAC_MASK) >> CCM_ANALOG_PFD_480_PFD1_FRAC_SHIFT;
+                        pfdClk = FREQ_480MHz / pfdFrac * 18;
+                    }
+                }
+                uint32_t axi_podf = 1 + ((CCM->CBCDR & CCM_CBCDR_SEMC_PODF_MASK) >> CCM_CBCDR_SEMC_PODF_SHIFT);
+
+                pfdClk /= axi_podf;
+            }
+            // PLL 480
+            else
+            {
+                if (CCM_ANALOG->PLL_USB1 & CCM_ANALOG_PLL_ARM_BYPASS(1))
+                {
+                    pfdClk = FREQ_24MHz;
+                }
+                else
+                {
+                    pfdClk = FREQ_480MHz;
+                }
+            }
+
+            seralRootClkDivider = ((CCM->CSCMR1 & CCM_CSCMR1_FLEXSPI_PODF_MASK) >> CCM_CSCMR1_FLEXSPI_PODF_SHIFT) + 1;
+
+            clockFrequency = pfdClk / seralRootClkDivider;
+        }
+        break;
+    default:
+        status = kStatus_InvalidArgument;
+        break;
+    }
+#endif
+    *freq = clockFrequency;
+
+    return status;
+}
