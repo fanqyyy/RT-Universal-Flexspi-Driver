@@ -263,8 +263,8 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>.\Sources\rom\hardware_init_rt1010.lib</PathWithFileName>
-      <FilenameWithoutPath>hardware_init_rt1010.lib</FilenameWithoutPath>
+      <PathWithFileName>.\Sources\rom\flexspi_hardware_init_rt1010.lib</PathWithFileName>
+      <FilenameWithoutPath>flexspi_hardware_init_rt1010.lib</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>

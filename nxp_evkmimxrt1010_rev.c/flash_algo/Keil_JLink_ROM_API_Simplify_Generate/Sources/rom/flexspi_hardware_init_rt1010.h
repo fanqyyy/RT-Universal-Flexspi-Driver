@@ -7,8 +7,8 @@
  *
  */
 
-#ifndef __HARDWARE_INIT_RT1010_H__
-#define __HARDWARE_INIT_RT1010_H__
+#ifndef __FLEXSPI_HARDWARE_INIT_RT1010_H__
+#define __FLEXSPI_HARDWARE_INIT_RT1010_H__
 
 #include "bl_flexspi.h"
 #include "bl_common.h"
@@ -27,4 +27,12 @@ uint32_t CLOCK_GetCPUFreq_RT1010(void);
 
 status_t flexspi_get_clock_rt1010(uint32_t instance, flexspi_clock_type_t type, uint32_t *freq);
 
-#endif // __HARDWARE_INIT_RT1010_H__
+void flexspi_clock_gate_enable_rt1010(uint32_t instance);
+
+void flexspi_clock_gate_disable_rt1010(uint32_t instance);
+
+status_t flexspi_nor_write_persistent_rt1010(const uint32_t data);
+
+status_t flexspi_nor_read_persistent_rt1010(uint32_t *data);
+
+#endif // __FLEXSPI_HARDWARE_INIT_RT1010_H__

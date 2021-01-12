@@ -18,7 +18,7 @@
 /* Init this global variable to workaround of the issue to running this flash algo in Segger */
 flexspi_nor_config_t config = {1};
 
-void disableWatchdog()
+void disableWatchdog_rt1010()
 {
     WDOG1->WMCR &= ~WDOG_WMCR_PDE_MASK;
     WDOG2->WMCR &= ~WDOG_WMCR_PDE_MASK;
@@ -63,7 +63,7 @@ int Init(unsigned long adr, unsigned long clk, unsigned long fnc)
 {
     status_t status;
     serial_nor_config_option_t option;
-    disableWatchdog();
+    disableWatchdog_rt1010();
     option.option0.U = 0xc0000006; // QuadSPI NOR, Frequency: 100MHz
     status           = flexspi_nor_get_config(FLEXSPI_NOR_INSTANCE, &config, &option);
     if (status != kStatus_Success)

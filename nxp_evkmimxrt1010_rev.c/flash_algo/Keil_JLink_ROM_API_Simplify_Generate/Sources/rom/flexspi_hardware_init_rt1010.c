@@ -7,15 +7,15 @@
  *
  */
  
-#ifndef __HARDWARE_INIT_RT1010_H__
-#define __HARDWARE_INIT_RT1010_H__ 
+#ifndef __FLEXSPI_HARDWARE_INIT_RT1010_H__
+#define __FLEXSPI_HARDWARE_INIT_RT1010_H__ 
  
 #include <assert.h>
 #include <stdbool.h>
 
 #include "bl_flexspi.h"
 #include "bl_common.h"
-#include "hardware_init_rt1010.h"
+#include "flexspi_hardware_init_rt1010.h"
 
 /*******************************************************************************
  * Definitions
@@ -640,6 +640,33 @@ status_t flexspi_get_clock_rt1010(uint32_t instance, flexspi_clock_type_t type, 
     }
 
     return status;
+}
+
+//!@brief Gate on the clock for the FlexSPI peripheral
+void flexspi_clock_gate_enable_rt1010(uint32_t instance)
+{
+    CCM->CCGR6 |= CCM_CCGR6_CG5_MASK;
+}
+
+//!@brief Gate off the clock the FlexSPI peripheral
+void flexspi_clock_gate_disable_rt1010(uint32_t instance)
+{
+    CCM->CCGR6 &= (uint32_t)~CCM_CCGR6_CG5_MASK;
+}
+
+//!@brief Write FlexSPI persistent content
+status_t flexspi_nor_write_persistent_rt1010(const uint32_t data)
+{
+    SRC->GPR[2] = data;
+
+    return kStatus_Success;
+}
+//!@brief Read FlexSPI persistent content
+status_t flexspi_nor_read_persistent_rt1010(uint32_t *data)
+{
+    *data = SRC->GPR[2];
+
+    return kStatus_Success;
 }
 
 #endif

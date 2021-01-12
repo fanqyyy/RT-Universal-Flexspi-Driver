@@ -7,7 +7,7 @@
  *
  */
 
-#include "hardware_init_rt1010.h"
+#include "flexspi_hardware_init_rt1010.h"
 #include "bl_flexspi.h"
 #include "bl_common.h"
 
@@ -64,3 +64,28 @@ status_t flexspi_get_clock(uint32_t instance, flexspi_clock_type_t type, uint32_
 
     return status;
 }
+
+void flexspi_clock_gate_enable(uint32_t instance)
+{
+    flexspi_clock_gate_enable_rt1010(instance);
+}
+
+void flexspi_clock_gate_disable(uint32_t instance)
+{
+    flexspi_clock_gate_disable_rt1010(instance);
+}
+
+status_t flexspi_nor_write_persistent(const uint32_t data)
+{	
+    flexspi_nor_write_persistent_rt1010(data);
+	
+    return kStatus_Success;
+}
+
+status_t flexspi_nor_read_persistent(uint32_t *data)
+{
+    flexspi_nor_read_persistent_rt1010(data);
+
+    return kStatus_Success;
+}
+
