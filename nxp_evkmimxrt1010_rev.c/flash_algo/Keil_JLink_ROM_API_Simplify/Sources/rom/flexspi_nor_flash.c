@@ -421,6 +421,10 @@ static status_t flexspi_nor_generate_config_block_micron_octalflash(uint32_t ins
                                                                     flexspi_nor_config_t *config,
                                                                     serial_nor_config_option_t *option);
 
+//!@brief Generate FlexSPI Configuration Block for Adesto EcoXIP Flash
+static status_t flexspi_nor_generate_config_block_adesto_octalflash(uint32_t instance,
+                                                                    flexspi_nor_config_t *config,
+                                                                    serial_nor_config_option_t *option);
 //!@brief Generate 0-4-4 mode enable sequence, currently only applicable to Micron QuadSPI FLASH
 //        For other QuadSPI NOR Flash device, it is not required.
 static status_t prepare_0_4_4_mode_enable_sequence(uint32_t instance,
@@ -762,6 +766,8 @@ status_t flexspi_nor_flash_erase_all(uint32_t instance, flexspi_nor_config_t *co
         flashXfer.seqId = memCfg->lutCustomSeq[NOR_CMD_INDEX_CHIPERASE].seqId;
         flashXfer.seqNum = memCfg->lutCustomSeq[NOR_CMD_INDEX_CHIPERASE].seqNum;
     }
+    uint32_t chipEraseSeqId = flashXfer.seqId;
+    uint32_t chipEraseSeqNum = flashXfer.seqNum;
 
     // Update serial clock for IP command, for some devices, it cannot erase/program the
     // device with the highest clock for read.
@@ -783,8 +789,8 @@ status_t flexspi_nor_flash_erase_all(uint32_t instance, flexspi_nor_config_t *co
             }
 
             flashXfer.baseAddress = baseAddr;
-            flexspi_update_lut(instance, NOR_CMD_LUT_FOR_IP_CMD, &config->memConfig.lookupTable[4 * flashXfer.seqId],
-                               flashXfer.seqNum);
+            flexspi_update_lut(instance, NOR_CMD_LUT_FOR_IP_CMD, &config->memConfig.lookupTable[4 * chipEraseSeqId],
+                               chipEraseSeqNum);
             flashXfer.seqId = NOR_CMD_LUT_FOR_IP_CMD;
             status = flexspi_command_xfer(instance, &flashXfer);
             if (status != kStatus_Success)
@@ -1090,7 +1096,7 @@ status_t prepare_quad_mode_enable_sequence(uint32_t instance,
                 case kSerialNorQuadMode_StatusReg1_Bit6:
                     if (!(status_val & FLEXSPI_BITMASK(6)))
                     {
-                        config->memConfig.lookupTable[4 * 6] = FLEXSPI_LUT_SEQ(
+                        config->memConfig.lookupTable[4 * 4] = FLEXSPI_LUT_SEQ(
                             CMD_SDR, FLEXSPI_1PAD, kSerialNorCmd_WriteStatusReg1, WRITE_SDR, FLEXSPI_1PAD, 0x01);
                         status_val &= (uint8_t)~0x3c; // Clear Block protection
                         status_val |= FLEXSPI_BITMASK(6);
@@ -1100,7 +1106,7 @@ status_t prepare_quad_mode_enable_sequence(uint32_t instance,
                 case kSerialNorQuadMode_StatusReg2_Bit1:
                     if (!(status_val & FLEXSPI_BITMASK(1)))
                     {
-                        config->memConfig.lookupTable[4 * 6] = FLEXSPI_LUT_SEQ(
+                        config->memConfig.lookupTable[4 * 4] = FLEXSPI_LUT_SEQ(
                             CMD_SDR, FLEXSPI_1PAD, kSerialNorCmd_WriteStatusReg1, WRITE_SDR, FLEXSPI_1PAD, 0x02);
                         status_val |= FLEXSPI_BITMASK(1);
                         // QE bit will be programmed after status1 register, so need to left shit 8 bit
@@ -1111,7 +1117,7 @@ status_t prepare_quad_mode_enable_sequence(uint32_t instance,
                 case kSerialNorQuadMode_StatusReg2_Bit1_0x31:
                     if (!(status_val & FLEXSPI_BITMASK(1)))
                     {
-                        config->memConfig.lookupTable[4 * 6] =
+                        config->memConfig.lookupTable[4 * 4] =
                             FLEXSPI_LUT_SEQ(CMD_SDR, FLEXSPI_1PAD, 0x31, WRITE_SDR, FLEXSPI_1PAD, 0x01);
                         status_val |= FLEXSPI_BITMASK(1);
                         config->memConfig.deviceModeCfgEnable = true;
@@ -1120,7 +1126,7 @@ status_t prepare_quad_mode_enable_sequence(uint32_t instance,
                 case kSerialNorQuadMode_StatusReg2_Bit7:
                     if (!(status_val & FLEXSPI_BITMASK(7)))
                     {
-                        config->memConfig.lookupTable[4 * 6] = FLEXSPI_LUT_SEQ(
+                        config->memConfig.lookupTable[4 * 4] = FLEXSPI_LUT_SEQ(
                             CMD_SDR, FLEXSPI_1PAD, kSerialNorCmd_WriteStatusReg2, WRITE_SDR, FLEXSPI_1PAD, 0x02);
                         status_val |= FLEXSPI_BITMASK(7);
                         config->memConfig.deviceModeCfgEnable = true;
@@ -1133,9 +1139,9 @@ status_t prepare_quad_mode_enable_sequence(uint32_t instance,
             if (config->memConfig.deviceModeCfgEnable)
             {
                 config->memConfig.deviceModeSeq.seqNum = 1;
-                config->memConfig.deviceModeSeq.seqId = 6;
-                config->memConfig.deviceModeArg = status_val;
-                config->memConfig.deviceModeType = kDeviceConfigCmdType_QuadEnable;
+                config->memConfig.deviceModeSeq.seqId  = 4;
+                config->memConfig.deviceModeArg        = status_val;
+                config->memConfig.deviceModeType       = kDeviceConfigCmdType_QuadEnable;
             }
         }
 
@@ -1365,7 +1371,27 @@ status_t get_page_sector_block_size_from_sfdp(flexspi_nor_config_t *config,
         // Flash size < 4G bits
         flash_size = (flash_density + 1U) >> 3;
     }
-    config->memConfig.sflashA1Size = flash_size;
+
+    uint32_t defaultFlashSize = 0;
+    uint32_t *flashSizeArray = &config->memConfig.sflashA1Size;
+
+    for (uint32_t i = 0; i < 4; i++)
+    {
+        if (*flashSizeArray != 0)
+        {
+            defaultFlashSize = *flashSizeArray;
+            break;
+        }
+        else
+        {
+            ++flashSizeArray;
+        }
+    }
+    if (defaultFlashSize < 1)
+    {
+        return kStatus_InvalidArgument;
+    }
+    *flashSizeArray = flash_size;
 
     // Calculate Page size
     uint32_t page_size;
@@ -1415,7 +1441,7 @@ status_t get_page_sector_block_size_from_sfdp(flexspi_nor_config_t *config,
         config->isUniformBlockSize = false;
     }
 
-    if (config->memConfig.sflashA1Size > MAX_24BIT_ADDRESSING_SIZE)
+    if (*flashSizeArray > MAX_24BIT_ADDRESSING_SIZE)
     {
         if (tbl->has_4b_addressing_inst_table)
         {
@@ -1426,9 +1452,6 @@ status_t get_page_sector_block_size_from_sfdp(flexspi_nor_config_t *config,
         {
             switch (param_tbl->erase_info[sector_erase_type].inst)
             {
-                default:
-                    *sector_erase_cmd = kSerialNorCmd_SE4K_4B;
-                    break;
                 case kSerialNorCmd_SE4K_3B:
                     *sector_erase_cmd = kSerialNorCmd_SE4K_4B;
                     break;
@@ -1438,9 +1461,6 @@ status_t get_page_sector_block_size_from_sfdp(flexspi_nor_config_t *config,
             }
             switch (param_tbl->erase_info[block_erase_type].inst)
             {
-                default:
-                    *block_erase_cmd = kSerialNorCmd_SE4K_4B;
-                    break;
                 case kSerialNorCmd_SE4K_3B:
                     *block_erase_cmd = kSerialNorCmd_SE4K_4B;
                     break;
@@ -1602,7 +1622,7 @@ status_t parse_sfdp(uint32_t instance,
             }
         }
         // Try to do ddr dummy probe for ddr read when the dummy cycle is not provided
-        else if (support_ddr_mode && (option->option0.B.option_size < 1))
+        else if (support_ddr_mode)
         {
             if (address_bits == 32)
             {
@@ -1706,16 +1726,18 @@ status_t parse_sfdp(uint32_t instance,
         }
 
         uint32_t enhance_mode = 0x00;
-        if (option->option0.B.misc_mode == kSerialNorEnhanceMode_Disabled)
+        uint8_t misc_mode = option->option0.B.misc_mode;
+        if (misc_mode == kSerialNorEnhanceMode_Disabled)
         {
             // Treat mode cycles as dummy cycles
             dummy_cycles += mode_cycles;
             mode_cycles = 0;
         }
-        else if (option->option0.B.misc_mode == kSerialNorEnhanceMode_0_4_4_Mode)
+        else if (misc_mode == kSerialNorEnhanceMode_0_4_4_Mode)
         {
             // Cannot detect the 0-4-4 mode entry method, disable 0-4-4 mode
-            if ((tbl->flash_param_tbl_size < 0x40) || (!param_tbl->mode_4_4_info.support_mode_0_4_4))
+            if ((tbl->flash_param_tbl_size < kSfdp_BasicProtocolTableSize_RevA) ||
+                (!param_tbl->mode_4_4_info.support_mode_0_4_4))
             {
                 dummy_cycles += mode_cycles;
                 mode_cycles = 0;
@@ -1769,6 +1791,10 @@ status_t parse_sfdp(uint32_t instance,
 
                 config->needExitNoCmdMode = true;
             }
+        }
+        else if (misc_mode == kSerialNorEnhanceMode_InternalLoopback)
+        {
+            config->memConfig.readSampleClkSrc = kFlexSPIReadSampleClk_LoopbackInternally;
         }
         else
         {
@@ -1832,7 +1858,7 @@ status_t parse_sfdp(uint32_t instance,
                 config->memConfig.lookupTable[1] =
                     FLEXSPI_LUT_SEQ(mode_inst, FLEXSPI_4PAD, enhance_mode, DUMMY_SDR, FLEXSPI_4PAD, dummy_cycles);
                 config->memConfig.lookupTable[2] =
-                    FLEXSPI_LUT_SEQ(READ_SDR, FLEXSPI_4PAD, 0x04, JMP_ON_CS, FLEXSPI_1PAD, 1);
+                    FLEXSPI_LUT_SEQ(READ_SDR, FLEXSPI_4PAD, 0x04, STOP, FLEXSPI_1PAD, 0x0);
             }
         }
 
@@ -1849,6 +1875,8 @@ status_t parse_sfdp(uint32_t instance,
             config->halfClkForNonReadCmd = true;
             config->memConfig.controllerMiscOption |= (1 << kFlexSpiMiscOffset_DdrModeEnable);
         }
+        // Always enable Safe configuration Frequency
+        config->memConfig.controllerMiscOption |= FLEXSPI_BITMASK(kFlexSpiMiscOffset_SafeConfigFreqEnable);
 
         status = kStatus_Success;
     } while (0);
@@ -2069,6 +2097,16 @@ status_t flexspi_nor_generate_config_block_using_sfdp(uint32_t instance,
         }
 #endif
         status = parse_sfdp(instance, config, &jedec_info_tbl, option);
+        if (status == kStatus_Success)
+        {
+            if (flexspi_is_parallel_mode(&config->memConfig))
+            {
+                config->memConfig.sflashB1Size = config->memConfig.sflashA1Size;
+                config->pageSize *= 2;
+                config->sectorSize *= 2;
+                config->blockSize *= 2;
+            }
+        }
 
     } while (0);
 
@@ -2157,8 +2195,8 @@ status_t flexspi_nor_generate_config_block_hyperflash(uint32_t instance, flexspi
          * Read ID-CFI Parameters,be aware that data stored on HyperFLASH are 16bit big-endian, so need to be swapped.
          */
         // CFI Entry
-        uint32_t data = 0x9800;
-        status = flexspi_nor_hyperbus_write(instance, 0x555, &data, 2);
+        uint32_t data[1] = { 0x9800 };
+        status = flexspi_nor_hyperbus_write(instance, 0x555, &data[0], 2);
         if (status != kStatus_Success)
         {
             break;
@@ -2197,8 +2235,8 @@ status_t flexspi_nor_generate_config_block_hyperflash(uint32_t instance, flexspi
         }
 
         // ASO Exit
-        data = 0xF000;
-        status = flexspi_nor_hyperbus_write(instance, 0x0, &data, 2);
+        data[0] = 0xF000;
+        status = flexspi_nor_hyperbus_write(instance, 0x0, &data[0], 2);
         if (status != kStatus_Success)
         {
             break;
@@ -2208,7 +2246,7 @@ status_t flexspi_nor_generate_config_block_hyperflash(uint32_t instance, flexspi
         config->memConfig.lookupTable[4 * NOR_CMD_LUT_SEQ_IDX_READ + 0] =
             FLEXSPI_LUT_SEQ(CMD_DDR, FLEXSPI_8PAD, 0xA0, RADDR_DDR, FLEXSPI_8PAD, 0x18);
         config->memConfig.lookupTable[4 * NOR_CMD_LUT_SEQ_IDX_READ + 1] =
-            FLEXSPI_LUT_SEQ(CADDR_DDR, FLEXSPI_8PAD, 0x10, DUMMY_DDR, FLEXSPI_8PAD, 0x06);
+            FLEXSPI_LUT_SEQ(CADDR_DDR, FLEXSPI_8PAD, 0x10, DUMMY_DDR, FLEXSPI_8PAD, 0x0c);
         config->memConfig.lookupTable[4 * NOR_CMD_LUT_SEQ_IDX_READ + 2] =
             FLEXSPI_LUT_SEQ(READ_DDR, FLEXSPI_8PAD, 0x04, STOP, FLEXSPI_1PAD, 0x0);
 
@@ -2630,7 +2668,7 @@ status_t flexspi_nor_generate_config_block_mxic_octalflash(uint32_t instance,
                     FLEXSPI_LUT_SEQ(cmd_inst, FLEXSPI_8PAD, 0xEC, cmd_inst, FLEXSPI_8PAD, 0x13);
             }
             config->memConfig.lookupTable[4 * NOR_CMD_LUT_SEQ_IDX_READ + 1] =
-                FLEXSPI_LUT_SEQ(addr_inst, FLEXSPI_8PAD, 0x20, dummy_inst, FLEXSPI_8PAD, 0x06);
+                FLEXSPI_LUT_SEQ(addr_inst, FLEXSPI_8PAD, 0x20, dummy_inst, FLEXSPI_8PAD, dummy_cycles);
             config->memConfig.lookupTable[4 * NOR_CMD_LUT_SEQ_IDX_READ + 2] =
                 FLEXSPI_LUT_SEQ(read_inst, FLEXSPI_8PAD, 0x04, STOP, FLEXSPI_1PAD, 0x00);
 
@@ -2764,26 +2802,10 @@ status_t flexspi_nor_generate_config_block_micron_octalflash(uint32_t instance,
         if (!is_sdr_mode)
         {
             // Update sample clock source and misc option
-            config->memConfig.controllerMiscOption =
-                (1 << kFlexSpiMiscOffset_DdrModeEnable) | (1 << kFlexSpiMiscOffset_SafeConfigFreqEnable);
+            config->memConfig.controllerMiscOption = FLEXSPI_BITMASK(kFlexSpiMiscOffset_DdrModeEnable) |
+                                                     FLEXSPI_BITMASK(kFlexSpiMiscOffset_SafeConfigFreqEnable);
             config->memConfig.readSampleClkSrc = kFlexSPIReadSampleClk_ExternalInputFromDqsPad;
         }
-        else
-        {
-            // Write Volatile register, set dummy to 12, then the Octal SDR read can reach 133MHz
-            config->memConfig.lookupTable[4 * 6 + 0] =
-                FLEXSPI_LUT_SEQ(CMD_SDR, FLEXSPI_1PAD, 0x81, CMD_SDR, FLEXSPI_1PAD, 0x00);
-            config->memConfig.lookupTable[4 * 6 + 1] =
-                FLEXSPI_LUT_SEQ(CMD_SDR, FLEXSPI_1PAD, 0x00, CMD_SDR, FLEXSPI_1PAD, 0x01);
-            config->memConfig.lookupTable[4 * 6 + 2] =
-                FLEXSPI_LUT_SEQ(WRITE_SDR, FLEXSPI_1PAD, 0x1, STOP, FLEXSPI_1PAD, 0);
-
-            config->memConfig.deviceModeArg = 12;
-            config->memConfig.deviceModeCfgEnable = true;
-            config->memConfig.deviceModeSeq.seqId = 6;
-            config->memConfig.deviceModeSeq.seqNum = 1;
-        }
-
         // Write Enable
         config->memConfig.lookupTable[4 * NOR_CMD_LUT_SEQ_IDX_WRITEENABLE + 0] =
             FLEXSPI_LUT_SEQ(CMD_SDR, FLEXSPI_1PAD, 0x06, STOP, FLEXSPI_1PAD, 0);
@@ -2835,7 +2857,7 @@ status_t flexspi_nor_generate_config_block_micron_octalflash(uint32_t instance,
                     config->memConfig.lookupTable[4 * NOR_CMD_LUT_SEQ_IDX_READ + 0] =
                         FLEXSPI_LUT_SEQ(CMD_SDR, FLEXSPI_1PAD, 0xFD, RADDR_DDR, FLEXSPI_8PAD, 0x20);
                     config->memConfig.lookupTable[4 * NOR_CMD_LUT_SEQ_IDX_READ + 1] =
-                        FLEXSPI_LUT_SEQ(DUMMY_DDR, FLEXSPI_8PAD, 0x06, READ_DDR, FLEXSPI_8PAD, 0x04);
+                        FLEXSPI_LUT_SEQ(DUMMY_DDR, FLEXSPI_8PAD, 0x0c, READ_DDR, FLEXSPI_8PAD, 0x04);
 
                     config->halfClkForNonReadCmd = true;
                 }
@@ -2846,6 +2868,18 @@ status_t flexspi_nor_generate_config_block_micron_octalflash(uint32_t instance,
                     {
                         read_cmd = 0xCC;
                     }
+                    // Write Volatile register, set dummy to 12, then the Octal SDR read can reach 133MHz
+                    config->memConfig.lookupTable[4 * 6 + 0] =
+                        FLEXSPI_LUT_SEQ(CMD_SDR, FLEXSPI_1PAD, 0x81, CMD_SDR, FLEXSPI_1PAD, 0x00);
+                    config->memConfig.lookupTable[4 * 6 + 1] =
+                        FLEXSPI_LUT_SEQ(CMD_SDR, FLEXSPI_1PAD, 0x00, CMD_SDR, FLEXSPI_1PAD, 0x01);
+                    config->memConfig.lookupTable[4 * 6 + 2] =
+                        FLEXSPI_LUT_SEQ(WRITE_SDR, FLEXSPI_1PAD, 0x1, STOP, FLEXSPI_1PAD, 0);
+
+                    config->memConfig.deviceModeArg = 12;
+                    config->memConfig.deviceModeCfgEnable = true;
+                    config->memConfig.deviceModeSeq.seqId = 6;
+                    config->memConfig.deviceModeSeq.seqNum = 1;
                     // Read
                     config->memConfig.lookupTable[4 * NOR_CMD_LUT_SEQ_IDX_READ + 0] =
                         FLEXSPI_LUT_SEQ(CMD_SDR, FLEXSPI_1PAD, read_cmd, RADDR_SDR, FLEXSPI_8PAD, address_bits);
@@ -2927,6 +2961,311 @@ status_t flexspi_nor_generate_config_block_micron_octalflash(uint32_t instance,
     return status;
 }
 
+status_t flexspi_nor_generate_config_block_adesto_octalflash(uint32_t instance,
+                                                             flexspi_nor_config_t *config,
+                                                             serial_nor_config_option_t *option)
+{
+    enum
+    {
+        kSfdp_LutIndex_Sdr_1_1,
+        kSfdp_LutIndex_Sdr_4_4,
+        kSfdp_LutIndex_Sdr_8_8,
+        kSfdp_LutIndex_Ddr_4_4,
+        kSfdp_LutIndex_Ddr_8_8
+    };
+
+    status_t status = kStatus_FLEXSPINOR_Flash_NotFound;
+
+    bool is_sdr_mode = option->option0.B.device_type == kSerialNorCfgOption_DeviceType_AdestoOctalSDR;
+
+    const lut_seq_t k_sdfp_lut[5] = {
+        // Read SFDP LUT sequence for 1 pad instruction
+        {FLEXSPI_LUT_SEQ(CMD_SDR, FLEXSPI_1PAD, kSerialFlash_ReadSFDP, RADDR_SDR, FLEXSPI_1PAD, 24),
+         FLEXSPI_LUT_SEQ(DUMMY_SDR, FLEXSPI_1PAD, 8, READ_SDR, FLEXSPI_1PAD, 0xFF), 0, 0},
+
+        // Read SFDP LUT sequence for QPI SDR instruction
+        {FLEXSPI_LUT_SEQ(CMD_SDR, FLEXSPI_4PAD, kSerialFlash_ReadSFDP, RADDR_SDR, FLEXSPI_4PAD, 24),
+         FLEXSPI_LUT_SEQ(READ_SDR, FLEXSPI_4PAD, 0xFF, STOP, FLEXSPI_1PAD, 0), 0, 0},
+
+        // Read SFDP LUT sequence for OPI SDR instruction
+        {FLEXSPI_LUT_SEQ(CMD_SDR, FLEXSPI_8PAD, kSerialFlash_ReadSFDP, RADDR_SDR, FLEXSPI_8PAD, 24),
+         FLEXSPI_LUT_SEQ(READ_SDR, FLEXSPI_8PAD, 0xFF, STOP, FLEXSPI_1PAD, 0), 0, 0},
+
+        // Read SFDP LUT sequence for QPI DDR instruction
+        {FLEXSPI_LUT_SEQ(CMD_SDR, FLEXSPI_4PAD, kSerialFlash_ReadSFDP, RADDR_DDR, FLEXSPI_4PAD, 24),
+         FLEXSPI_LUT_SEQ(READ_DDR, FLEXSPI_4PAD, 0xFF, STOP, FLEXSPI_1PAD, 0), 0, 0},
+
+        // Read SFDP LUT sequence for OPI DDR instruction
+        {FLEXSPI_LUT_SEQ(CMD_SDR, FLEXSPI_8PAD, kSerialFlash_ReadSFDP, RADDR_DDR, FLEXSPI_8PAD, 32),
+         FLEXSPI_LUT_SEQ(READ_DDR, FLEXSPI_8PAD, 0xFF, STOP, FLEXSPI_1PAD, 0), 0, 0},
+    };
+
+    do
+    {
+        bool address_shift_enable       = false;
+        config->memConfig.sflashPadType = kSerialFlash_4Pads;
+
+        uint32_t query_pads = option->option0.B.query_pads;
+        uint32_t cmd_pads   = option->option0.B.cmd_pads;
+
+        config->memConfig.controllerMiscOption = (1 << kFlexSpiMiscOffset_SafeConfigFreqEnable);
+        if (query_pads == FLEXSPI_1PAD)
+        {
+            flash_run_context_t run_ctx;
+            status = flexspi_nor_read_persistent(&run_ctx.U);
+            // Clear persistent status
+            flexspi_nor_write_persistent(kFlashInstMode_ExtendedSpi);
+            if (status == kStatus_Success)
+            {
+                status = flexspi_nor_restore_spi_protocol(instance, config, &run_ctx);
+                if (status != kStatus_Success)
+                {
+                    break;
+                }
+            }
+            config->memConfig.sflashPadType    = kSerialFlash_1Pad;
+            config->memConfig.readSampleClkSrc = kFlexSPIReadSampleClk_LoopbackInternally;
+        }
+        else if (query_pads == FLEXSPI_4PAD)
+        {
+            config->memConfig.sflashPadType    = kSerialFlash_4Pads;
+            config->memConfig.readSampleClkSrc = kFlexSPIReadSampleClk_ExternalInputFromDqsPad;
+        }
+        else if (query_pads == FLEXSPI_8PAD)
+        {
+            config->memConfig.readSampleClkSrc = kFlexSPIReadSampleClk_ExternalInputFromDqsPad;
+            config->memConfig.sflashPadType    = kSerialFlash_8Pads;
+            if (!is_sdr_mode)
+            {
+                address_shift_enable = true;
+            }
+        }
+        else
+        {
+            break;
+        }
+
+        if ((cmd_pads != FLEXSPI_1PAD) && (cmd_pads != FLEXSPI_4PAD) && (cmd_pads != FLEXSPI_8PAD))
+        {
+            break;
+        }
+
+        if ((query_pads == FLEXSPI_1PAD) && (cmd_pads == FLEXSPI_1PAD))
+        {
+            is_sdr_mode = true;
+        }
+
+        if (cmd_pads == FLEXSPI_4PAD)
+        {
+            config->memConfig.sflashPadType = kSerialFlash_4Pads;
+        }
+        if (cmd_pads == FLEXSPI_8PAD)
+        {
+            config->memConfig.sflashPadType = kSerialFlash_8Pads;
+        }
+
+        if (is_sdr_mode)
+        {
+            config->memConfig.controllerMiscOption &= (uint32_t) ~(1u << kFlexSpiMiscOffset_DdrModeEnable);
+        }
+        else
+        {
+            config->memConfig.controllerMiscOption |= (1u << kFlexSpiMiscOffset_DdrModeEnable);
+        }
+
+        status = flexspi_nor_flash_init(instance, config);
+        if (status != kStatus_Success)
+        {
+            break;
+        }
+
+        uint32_t lutIndex = kSfdp_LutIndex_Sdr_1_1;
+        if (is_sdr_mode)
+        {
+            switch (query_pads)
+            {
+                case FLEXSPI_4PAD:
+                    lutIndex = kSfdp_LutIndex_Sdr_4_4;
+                    break;
+                case FLEXSPI_8PAD:
+                    lutIndex = kSfdp_LutIndex_Sdr_8_8;
+                    break;
+                default:
+                    lutIndex = kSfdp_LutIndex_Sdr_1_1;
+                    break;
+            }
+        }
+        else
+        {
+            switch (query_pads)
+            {
+                case FLEXSPI_4PAD:
+                    lutIndex = kSfdp_LutIndex_Ddr_4_4;
+                    break;
+                case FLEXSPI_8PAD:
+                    lutIndex = kSfdp_LutIndex_Ddr_8_8;
+                    break;
+                default:
+                    lutIndex = kSfdp_LutIndex_Sdr_1_1;
+                    break;
+            }
+        }
+
+        flexspi_update_lut(instance, NOR_CMD_LUT_FOR_IP_CMD, (const uint32_t *)&k_sdfp_lut[lutIndex], 1);
+
+        jedec_info_table_t jedec_info_tbl;
+        status = flexspi_nor_read_sfdp_info(instance, &jedec_info_tbl, address_shift_enable);
+        if (status != kStatus_Success)
+        {
+            break;
+        }
+
+        // Get Flash Size, Sector size from SFDP
+        uint32_t sector_erase_cmd;
+        uint32_t block_erase_cmd;
+        get_page_sector_block_size_from_sfdp(config, &jedec_info_tbl, &sector_erase_cmd, &block_erase_cmd);
+
+        // Update Read Sampling clock
+        config->memConfig.readSampleClkSrc = kFlexSPIReadSampleClk_ExternalInputFromDqsPad;
+
+        // Write Enable
+        config->memConfig.lookupTable[4 * NOR_CMD_LUT_SEQ_IDX_WRITEENABLE + 0] =
+            FLEXSPI_LUT_SEQ(CMD_SDR, FLEXSPI_1PAD, 0x06, STOP, FLEXSPI_1PAD, 0);
+        // Read status
+        config->memConfig.lookupTable[4 * NOR_CMD_LUT_SEQ_IDX_READSTATUS + 0] =
+            FLEXSPI_LUT_SEQ(CMD_SDR, FLEXSPI_1PAD, 0x05, READ_SDR, FLEXSPI_1PAD, 0x04);
+
+        uint32_t addr_pads  = cmd_pads;
+        uint32_t dummy_pads = cmd_pads;
+        uint32_t write_pads = cmd_pads;
+        uint32_t read_pads  = cmd_pads;
+        uint32_t addr_inst  = is_sdr_mode ? RADDR_SDR : RADDR_DDR;
+        uint32_t dummy_inst = is_sdr_mode ? DUMMY_SDR : DUMMY_DDR;
+        uint32_t read_inst  = is_sdr_mode ? READ_SDR : READ_DDR;
+        uint32_t write_inst = is_sdr_mode ? WRITE_SDR : WRITE_DDR;
+        uint32_t dummy_cycles = (is_sdr_mode) ? 6 : 12;
+
+        // Read command
+        config->memConfig.lookupTable[4 * NOR_CMD_LUT_SEQ_IDX_READ + 0] =
+            FLEXSPI_LUT_SEQ(CMD_SDR, cmd_pads, 0x0B, addr_inst, addr_pads, 0x20);
+        config->memConfig.lookupTable[4 * NOR_CMD_LUT_SEQ_IDX_READ + 1] =
+            FLEXSPI_LUT_SEQ(dummy_inst, dummy_pads, dummy_cycles, read_inst, read_pads, 0x04);
+
+        // Erase Sector
+        config->memConfig.lookupTable[4 * NOR_CMD_LUT_SEQ_IDX_ERASESECTOR + 0] =
+            FLEXSPI_LUT_SEQ(CMD_SDR, cmd_pads, 0x20, addr_inst, addr_pads, 0x20);
+
+        // Erase Block
+        config->memConfig.lookupTable[4 * NOR_CMD_LUT_SEQ_IDX_ERASEBLOCK + 0] =
+            FLEXSPI_LUT_SEQ(CMD_SDR, cmd_pads, 0xd8, addr_inst, addr_pads, 0x20);
+
+        // Page Program
+        config->memConfig.lookupTable[4 * NOR_CMD_LUT_SEQ_IDX_PAGEPROGRAM + 0] =
+            FLEXSPI_LUT_SEQ(CMD_SDR, cmd_pads, 0x02, addr_inst, addr_pads, 0x20);
+        config->memConfig.lookupTable[4 * NOR_CMD_LUT_SEQ_IDX_PAGEPROGRAM + 1] =
+            FLEXSPI_LUT_SEQ(write_inst, write_pads, 0x80, STOP, FLEXSPI_1PAD, 0);
+
+        // Erase Chip
+        config->memConfig.lookupTable[4 * NOR_CMD_LUT_SEQ_IDX_CHIPERASE + 0] =
+            FLEXSPI_LUT_SEQ(CMD_SDR, cmd_pads, 0x60, STOP, FLEXSPI_1PAD, 0);
+
+        if ((cmd_pads == FLEXSPI_4PAD) || (cmd_pads == FLEXSPI_8PAD))
+        {
+            // Read status XPI
+            config->memConfig.lookupTable[4 * NOR_CMD_LUT_SEQ_IDX_READSTATUS_XPI + 0] =
+                FLEXSPI_LUT_SEQ(CMD_SDR, cmd_pads, 0x05, read_inst, read_pads, 0x04);
+
+            // Write Enable XPI
+            config->memConfig.lookupTable[4 * NOR_CMD_LUT_SEQ_IDX_WRITEENABLE_XPI + 0] =
+                FLEXSPI_LUT_SEQ(CMD_SDR, cmd_pads, 0x06, STOP, FLEXSPI_1PAD, 0);
+
+            config->serialNorType = kSerialNorType_XPI;
+        }
+
+        // Global Unprotect
+        config->memConfig.deviceModeArg = 0x000000;
+
+        if (cmd_pads == FLEXSPI_4PAD)
+        {
+            // Enable QPI mode
+            config->memConfig.deviceModeArg |= 0x040000;
+        }
+        else if (cmd_pads == FLEXSPI_8PAD)
+        {
+            // Enable OPI mode
+            config->memConfig.deviceModeArg |= 0x080000;
+        }
+
+        if (!is_sdr_mode)
+        {
+            // Enable DDR/DTR mode
+            config->memConfig.deviceModeArg |= 0x800000;
+        }
+        else
+        {
+            //  Use delay cell settings for OPI SDR mode using external DQS as sampling source.
+            config->memConfig.controllerMiscOption |= (1u << kFlexSpiMiscOffset_UseValidTimeForAllFreq);
+            config->memConfig.dataValidTime[0].delay_cells = 1u;
+        }
+
+        config->memConfig.lookupTable[4 * 6] = FLEXSPI_LUT_SEQ(CMD_SDR, FLEXSPI_1PAD, 0x71, CMD_SDR, FLEXSPI_1PAD, 0x0);
+        config->memConfig.lookupTable[4 * 6 + 1] =
+            FLEXSPI_LUT_SEQ(WRITE_SDR, FLEXSPI_1PAD, 0x03, STOP, FLEXSPI_1PAD, 0);
+        config->memConfig.deviceModeCfgEnable = true;
+        if (cmd_pads != FLEXSPI_1PAD)
+        {
+            config->memConfig.deviceModeType = kDeviceConfigCmdType_Spi2Xpi;
+        }
+        else
+        {
+            config->memConfig.deviceModeType = kDeviceConfigCmdType_Generic;
+        }
+        config->memConfig.deviceModeSeq.seqId  = 6;
+        config->memConfig.deviceModeSeq.seqNum = 1;
+        config->memConfig.waitTimeCfgCommands  = 1; // Wait 100us
+
+        flash_run_context_t run_ctx;
+        run_ctx.B.por_mode = kFlashInstMode_ExtendedSpi;
+        if (is_sdr_mode)
+        {
+            if (cmd_pads == FLEXSPI_4PAD)
+            {
+                run_ctx.B.current_mode = kFlashInstMode_QPI_SDR;
+            }
+            else if (cmd_pads == FLEXSPI_8PAD)
+            {
+                run_ctx.B.current_mode = kFlashInstMode_OPI_SDR;
+            }
+            else
+            {
+                run_ctx.B.current_mode = kFlashInstMode_ExtendedSpi;
+            }
+        }
+        else
+        {
+            if (cmd_pads == FLEXSPI_4PAD)
+            {
+                run_ctx.B.current_mode = kFlashInstMode_QPI_DDR;
+            }
+            else if (cmd_pads == FLEXSPI_8PAD)
+            {
+                run_ctx.B.current_mode = kFlashInstMode_OPI_DDR;
+            }
+            else
+            {
+                run_ctx.B.current_mode = kFlashInstMode_ExtendedSpi;
+            }
+        }
+        run_ctx.B.restore_sequence = kRestoreSequence_Send_06_FF;
+        flexspi_nor_write_persistent(run_ctx.U);
+
+        status = kStatus_Success;
+
+    } while (0);
+
+    return status;
+}
+
 // See flexspi_nor_flash.h for more details.
 status_t flexspi_nor_get_config(uint32_t instance, flexspi_nor_config_t *config, serial_nor_config_option_t *option)
 {
@@ -2942,17 +3281,55 @@ status_t flexspi_nor_get_config(uint32_t instance, flexspi_nor_config_t *config,
         // Configure the Configuration block to default value
         memset(config, 0, sizeof(flexspi_nor_config_t));
         config->memConfig.serialClkFreq = kFlexSpiSerialClk_30MHz;
-        config->memConfig.sflashA1Size = MAX_24BIT_ADDRESSING_SIZE;
-        config->memConfig.tag = FLEXSPI_CFG_BLK_TAG;
-        config->memConfig.version = FLEXSPI_CFG_BLK_VERSION;
-        config->memConfig.csHoldTime = 3;
+        config->memConfig.sflashA1Size  = MAX_24BIT_ADDRESSING_SIZE;
+        config->memConfig.tag           = FLEXSPI_CFG_BLK_TAG;
+        config->memConfig.version       = FLEXSPI_CFG_BLK_VERSION;
+        config->memConfig.csHoldTime  = 3;
         config->memConfig.csSetupTime = 3;
-        config->ipcmdSerialClkFreq = kFlexSpiSerialClk_30MHz;
+        config->ipcmdSerialClkFreq      = kFlexSpiSerialClk_30MHz;
 
-        // Support second pinmux group
-        if ((option->option0.B.option_size > 0) && (option->option1.B.dqs_pinmux_group == 1))
+        if (option->option0.B.option_size > 0)
         {
-            config->memConfig.controllerMiscOption |= FLEXSPI_BITMASK(kFlexSpiMiscOffset_SecondPinMux);
+            // Switch to second pinmux group
+            if (option->option1.B.pinmux_group == 1)
+            {
+                config->memConfig.controllerMiscOption |= FLEXSPI_BITMASK(kFlexSpiMiscOffset_SecondPinMux);
+            }
+
+            // Change the Pad Drive Strength
+            if (option->option1.B.drive_strength)
+            {
+                flexspi_update_padsetting(&config->memConfig, option->option1.B.drive_strength);
+            }
+            // Enable parallel mode support
+            if (option->option1.B.flash_connection)
+            {
+                if ((option->option0.B.device_type == kSerialNorCfgOption_DeviceType_ReadSFDP_SDR) ||
+                    (option->option0.B.device_type == kSerialNorCfgOption_DeviceType_ReadSFDP_DDR))
+                {
+                    uint32_t flashConnection = option->option1.B.flash_connection;
+
+                    switch (flashConnection)
+                    {
+                        default:
+                        case kSerialNorConnection_SinglePortA:
+                            // This is default setting, do nothing here
+                            break;
+                        case kSerialNorConnection_Parallel:
+                            config->memConfig.controllerMiscOption |=
+                                FLEXSPI_BITMASK(kFlexSpiMiscOffset_ParallelEnable);
+                            break;
+                        case kSerialNorConnection_SinglePortB:
+                            config->memConfig.sflashA1Size = 0;
+                            config->memConfig.sflashB1Size = MAX_24BIT_ADDRESSING_SIZE;
+                            break;
+                    }
+                }
+                else
+                {
+                    option->option1.B.flash_connection = 0;
+                }
+            }
         }
 
         switch (option->option0.B.device_type)
@@ -2975,6 +3352,10 @@ status_t flexspi_nor_get_config(uint32_t instance, flexspi_nor_config_t *config,
             case kSerialNorCfgOption_DeviceType_MicronOctalSDR:
                 status = flexspi_nor_generate_config_block_micron_octalflash(instance, config, option);
                 break;
+            case kSerialNorCfgOption_DeviceType_AdestoOctalDDR:
+            case kSerialNorCfgOption_DeviceType_AdestoOctalSDR:
+                status = flexspi_nor_generate_config_block_adesto_octalflash(instance, config, option);
+                break;
             default:
                 status = kStatus_InvalidArgument;
                 break;
@@ -2984,6 +3365,11 @@ status_t flexspi_nor_get_config(uint32_t instance, flexspi_nor_config_t *config,
         {
             flexspi_set_failsafe_setting(&config->memConfig);
             config->memConfig.serialClkFreq = option->option0.B.max_freq;
+
+            if (option->option0.B.option_size && (option->option1.B.flash_connection == kSerialNorConnection_BothPorts))
+            {
+                config->memConfig.sflashB1Size = config->memConfig.sflashA1Size;
+            }
         }
         config->memConfig.deviceType = kFlexSpiDeviceType_SerialNOR;
 
