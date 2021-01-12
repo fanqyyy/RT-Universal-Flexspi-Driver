@@ -20,6 +20,11 @@ void flexspi_iomux_config(uint32_t instance, flexspi_mem_config_t *config)
     flexspi_iomux_config_rt1010(instance, config);
 }
 
+void flexspi_update_padsetting(flexspi_mem_config_t *config, uint32_t driveStrength)
+{
+    flexspi_update_padsetting_rt1010(config, driveStrength);
+}
+
 void flexspi_clock_config(uint32_t instance, uint32_t freq, uint32_t sampleClkMode)
 {   
     flexspi_clock_config_rt1010(instance, freq, sampleClkMode);   
