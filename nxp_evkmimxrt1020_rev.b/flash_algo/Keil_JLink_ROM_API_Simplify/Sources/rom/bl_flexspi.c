@@ -107,18 +107,6 @@ bool flexspi_is_parallel_mode(flexspi_mem_config_t *config)
     }
 }
 
-//!@brief Gate on the clock for the FlexSPI peripheral
-void flexspi_clock_gate_enable(uint32_t instance)
-{
-    CCM->CCGR6 |= CCM_CCGR6_CG5_MASK;
-}
-
-//!@brief Gate off the clock the FlexSPI peripheral
-void flexspi_clock_gate_disable(uint32_t instance)
-{
-    CCM->CCGR6 &= (uint32_t)~CCM_CCGR6_CG5_MASK;
-}
-
 bool flexspi_is_padsetting_override_enable(flexspi_mem_config_t *config)
 {
     if (config->controllerMiscOption & FLEXSPI_BITMASK(kFlexSpiMiscOffset_PadSettingOverrideEnable))

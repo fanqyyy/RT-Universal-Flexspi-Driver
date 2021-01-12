@@ -49,9 +49,9 @@
             <InvalidFlash>1</InvalidFlash>
           </TargetStatus>
           <OutputDirectory>.\Output\</OutputDirectory>
-          <OutputName>MIMXRT1021_QSPI</OutputName>
-          <CreateExecutable>1</CreateExecutable>
-          <CreateLib>0</CreateLib>
+          <OutputName>flexspi_hardware_init_rt1020</OutputName>
+          <CreateExecutable>0</CreateExecutable>
+          <CreateLib>1</CreateLib>
           <CreateHexFile>0</CreateHexFile>
           <DebugInformation>1</DebugInformation>
           <BrowseInformation>1</BrowseInformation>
@@ -404,24 +404,9 @@
           <GroupName>Sources</GroupName>
           <Files>
             <File>
-              <FileName>bl_flexspi.c</FileName>
+              <FileName>flexspi_hardware_init_rt1020.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\Sources\rom\bl_flexspi.c</FilePath>
-            </File>
-            <File>
-              <FileName>flexspi_nor_flash.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Sources\rom\flexspi_nor_flash.c</FilePath>
-            </File>
-            <File>
-              <FileName>app.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Sources\rom\app.c</FilePath>
-            </File>
-            <File>
-              <FileName>flexspi_hardware_init_rt1020.lib</FileName>
-              <FileType>4</FileType>
-              <FilePath>.\Sources\rom\flexspi_hardware_init_rt1020.lib</FilePath>
+              <FilePath>.\Sources\rom\flexspi_hardware_init_rt1020.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -824,24 +809,9 @@
           <GroupName>Sources</GroupName>
           <Files>
             <File>
-              <FileName>bl_flexspi.c</FileName>
+              <FileName>flexspi_hardware_init_rt1020.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\Sources\rom\bl_flexspi.c</FilePath>
-            </File>
-            <File>
-              <FileName>flexspi_nor_flash.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Sources\rom\flexspi_nor_flash.c</FilePath>
-            </File>
-            <File>
-              <FileName>app.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Sources\rom\app.c</FilePath>
-            </File>
-            <File>
-              <FileName>flexspi_hardware_init_rt1020.lib</FileName>
-              <FileType>4</FileType>
-              <FilePath>.\Sources\rom\flexspi_hardware_init_rt1020.lib</FilePath>
+              <FilePath>.\Sources\rom\flexspi_hardware_init_rt1020.c</FilePath>
             </File>
           </Files>
         </Group>
