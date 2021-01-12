@@ -17,8 +17,20 @@
 
 flexspi_nor_config_t config = {1};
 
-void disableWatchdog_rt1050()
+/*
+ *  Initialize Flash Programming Functions
+ *    Parameter:      adr:  Device Base Address
+ *                    clk:  Clock Frequency (Hz)
+ *                    fnc:  Function Code (1 - Erase, 2 - Program, 3 - Verify)
+ *    Return Value:   0 - OK,  1 - Failed
+ */
+
+int Init(unsigned long adr, unsigned long clk, unsigned long fnc)
 {
+		status_t status;
+    serial_nor_config_option_t option;
+    option.option0.U = 0xc0233007; // HyperFLASH 1V8, Query pads: Octal, CMD pads: 8, Frequency: 133MHz
+                                   /* Disable Watchdog Power Down Counter */
     WDOG1->WMCR &= ~WDOG_WMCR_PDE_MASK;
     WDOG2->WMCR &= ~WDOG_WMCR_PDE_MASK;
 
@@ -35,25 +47,7 @@ void disableWatchdog_rt1050()
     RTWDOG->CNT   = 0xD928C520U; /* 0xD928C520U is the update key */
     RTWDOG->TOVAL = 0xFFFF;
     RTWDOG->CS    = (uint32_t)((RTWDOG->CS) & ~RTWDOG_CS_EN_MASK) | RTWDOG_CS_UPDATE_MASK;
-}
-
-/*
- *  Initialize Flash Programming Functions
- *    Parameter:      adr:  Device Base Address
- *                    clk:  Clock Frequency (Hz)
- *                    fnc:  Function Code (1 - Erase, 2 - Program, 3 - Verify)
- *    Return Value:   0 - OK,  1 - Failed
- */
-
-int Init(unsigned long adr, unsigned long clk, unsigned long fnc)
-{
-		status_t status;
-    serial_nor_config_option_t option;
-    option.option0.U = 0xc0233007; // HyperFLASH 1V8, Query pads: Octal, CMD pads: 8, Frequency: 133MHz
-                                   /* Disable Watchdog Power Down Counter */
 		
-	  disableWatchdog_rt1050();
-	
     status = flexspi_nor_get_config(FLEXSPI_NOR_INSTANCE, &config, &option);
     if (status != kStatus_Success)
     {
