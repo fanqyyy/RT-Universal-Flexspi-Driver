@@ -327,7 +327,7 @@ static inline bool CLOCK_IsPllBypassed(CCM_ANALOG_Type *base, clock_pll_t pll)
     return (bool)(CCM_ANALOG_TUPLE_REG(base, pll) & (1UL << CCM_ANALOG_PLL_BYPASS_SHIFT));
 }
 
-uint32_t CLOCK_GetPllFreq(clock_pll_t pll)
+static uint32_t CLOCK_GetPllFreq(clock_pll_t pll)
 {
     uint32_t freq;
     uint32_t divSelect;
@@ -441,7 +441,7 @@ uint32_t CLOCK_GetPllFreq(clock_pll_t pll)
     return freq;
 }
 
-uint32_t CLOCK_GetUsb1PfdFreq(clock_pfd_t pfd)
+static uint32_t CLOCK_GetUsb1PfdFreq(clock_pfd_t pfd)
 {
     uint32_t freq = CLOCK_GetPllFreq(kCLOCK_PllUsb1);
 
@@ -472,7 +472,7 @@ uint32_t CLOCK_GetUsb1PfdFreq(clock_pfd_t pfd)
     return freq;
 }
 
-uint32_t CLOCK_GetSysPfdFreq(clock_pfd_t pfd)
+static uint32_t CLOCK_GetSysPfdFreq(clock_pfd_t pfd)
 {
     uint32_t freq = CLOCK_GetPllFreq(kCLOCK_PllSys);
 
